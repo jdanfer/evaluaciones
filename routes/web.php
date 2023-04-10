@@ -80,7 +80,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('admin/personas', ['as' => 'admin/personas', 'uses' => 'App\Http\Controllers\AdminController@createPersona']);
     ///AutoEvaluaciones
     Route::get('admin/autoevaluaciones/crear', ['as' => 'admin/autoevaluaciones/crear', 'uses' => 'App\Http\Controllers\AdminController@showAutoEvalCreate']);
-    Route::get('admin/autoevaluaciones', ['as' => 'admin/autoevaluaciones', 'uses' => 'App\Http\Controllers\AdminController@showAutoeval']);
+    Route::get('admin/autoevaluaciones', ['as' => 'admin/autoevaluaciones', 'uses' => 'App\Http\Controllers\AdminController@showAutoeval']); //acá crea la autoeval
     Route::get('admin/autoevaluaciones/{id}/editar', ['as' => 'admin/autoevaluaciones/{id}/editar', 'uses' => 'App\Http\Controllers\AdminController@showAutoEvalEdit']);
     Route::post('admin/autoevaluaciones/{id}/editar', ['as' => 'admin/autoevaluaciones/{id}/editar', 'uses' => 'App\Http\Controllers\AdminController@editAutoEvalua']);
     Route::get('admin/autoevaluaciones/eliminar', ['as' => 'admin/autoevaluaciones/eliminar', 'uses' => 'App\Http\Controllers\AdminController@deleteAutoEval']);

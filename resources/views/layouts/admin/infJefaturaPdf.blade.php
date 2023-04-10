@@ -32,19 +32,15 @@
 
     </div>
 </div>
-<div class="row">
-  <div class="col-lg-8 col-md-8">
-    <div class="card">
-      <div class="table-responsive">
-        <table class="table align-items-center mb-0">
+<table>
         <thead>
            <tr>
-            <th class="table-success">Nombre</th>
-            <th class="table-success">Competencias</th>
-            <th class="table-success">Responsab.</th>
-            <th class="table-success">Funciones</th>
-            <th class="table-success">Actitud</th>
-            <th class="table-success">Total</th>
+            <th style="width: 400px; color: white" class="bg-primary">Nombre</th>
+            <th>Competencias</th>
+            <th>Responsab.</th>
+            <th>Funciones</th>
+            <th>Actitud</th>
+            <th>Total</th>
           </tr>
         </thead>
         <tbody>
@@ -55,29 +51,35 @@
               <td>{{$borrareva->prom2}}</td>
               <td>{{$borrareva->prom3}}</td>
               <td>{{$borrareva->prom4}}</td>
-              <td>00,00</td>
-
+              <td>{{$borrareva->promtot}}</td>
             </tr>
+            @if ($borrareva->cambio_jefe===1)
+              <tr>
+                <td class="bg-success" style="color: white">Sub-Total {{$borrareva->jefatura}}: {{$borrareva->cant_porjefe}}</td>
+                <td class="bg-success" style="color: white">{{$borrareva->tot_prom1}}</td>
+                <td class="bg-success" style="color: white">{{$borrareva->tot_prom2}}</td>
+                <td class="bg-success" style="color: white">{{$borrareva->tot_prom3}}</td>
+                <td class="bg-success" style="color: white">{{$borrareva->tot_prom4}}</td>
+                <td class="bg-success" style="color: white">{{$borrareva->tot_promg}}</td>
+              </tr>
+            @endif
+            @if ($borrareva->estotal===99)
+              <tr>
+                <td class="bg-success" style="color: white">Total personas: {{$borrareva->saldo_per}}</td>
+                <td class="bg-success" style="color: white">{{$borrareva->totalgral1}}</td>
+                <td class="bg-success" style="color: white">{{$borrareva->totalgral2}}</td>
+                <td class="bg-success" style="color: white">{{$borrareva->totalgral3}}</td>
+                <td class="bg-success" style="color: white">{{$borrareva->totalgral4}}</td>
+                <td class="bg-success" style="color: white">{{$borrareva->totalgraltot}}</td>
+    
+              </tr>
+  
+            @endif
           @endforeach  
-          <tr>
-            <td class="bg-success" style="color: white">Promedios totales:</td>
-            <td class="bg-success" style="color: white">000</td>
-            <td class="bg-success" style="color: white">000</td>
-            <td class="bg-success" style="color: white">000</td>
-            <td class="bg-success" style="color: white">000</td>
-            <td class="bg-success" style="color: white">000</td>
-
-          </tr>
-
         </tbody>
-      </table>
-    </div>
-  </div>     
-</div>
+</table>
 
-
-
-    <!-- jQuery -->
+<!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <!-- JS de Popper.js -->

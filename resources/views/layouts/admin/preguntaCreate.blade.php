@@ -42,7 +42,7 @@
                 </div>
                 <div class="form-group">
                   <label for="select-cargo">Cargo</label>
-                  <select id="select-cargo" class="form-control input-sm" name="cargo_id">
+                  <select style="width: 500px;" id="select-cargo" class="form-control input-sm" name="cargo_id">
                      <option value="">Seleccionar...</option>
                      @foreach ($cargos as $cargo)
                          @if (old('cargo_id') == $cargo->id)
@@ -53,11 +53,9 @@
                      @endforeach
                    </select>
                 </div>
-              </div>
-  
                 <div class="form-group">
                   <label for="select-jefatura">Jefatura</label>
-                  <select id="select-jefatura" class="form-control input-sm" name="jefatura_id">
+                  <select style="width: 500px;" id="select-jefatura" class="form-control input-sm" name="jefatura_id">
                      <option value="">Seleccionar...</option>
                      @foreach ($jefaturas as $jefatura)
                          @if (old('jefatura_id') == $jefatura->id)

@@ -41,7 +41,6 @@ class AdminController extends Controller
             $borrarinf->autoeval = $autoev->puntos;
             $borrarinf->evalua = 0;
             $borrarinf->promedio = 0;
-            $borrarinf->observa = $autoev->observacion;
             $borrarinf->titulo = $lapregunta->titulo->descrip;
             $borrarinf->jefatura = $lapersona->jefatura->descrip;
             $borrarinf->pregunta_id = $lapregunta->id;
@@ -72,32 +71,47 @@ class AdminController extends Controller
                         $totpromediotit = 0;
                         $idanterior = $evaljefe->id - 1;
                         $infmodif = Infevalula::find($idanterior);
-                        $totpromediotit = $infmodif->saldo_prod / $cuentaPreg;
+                        if ($cuentaPreg <= 0) {
+                            $totpromediotit = 0;
+                        } else {
+                            $totpromediotit = $infmodif->saldo_prod / $cuentaPreg;
+                        }
+                        $totpromediotit = round($totpromediotit, 2);
                         $infmodif->saldo_prod = $totpromediotit;
                         $infmodif->promedio_tit = 99;
                         $infmodif->save();
                         $cuentaPreg = 0;
+                        $totpromediotit = 0;
+                        $promediotit = 0;
                     }
                 }
                 $cuentaPreg = $cuentaPreg + 1;
                 $promedio = $evaljefe->autoeval + $autoevaluas->puntos;
                 $promedio = $promedio / 2;
                 $promediotit = $promediotit + $promedio;
+                $promediotit = round($promediotit, 2);
                 $infevaluas->evalua = $autoevaluas->puntos;
+                $infevaluas->observa = $autoevaluas->observacion;
                 $infevaluas->promedio = $promedio;
                 $infevaluas->saldo_prod = $promediotit;
                 $infevaluas->save();
                 $totalprod = $totalprod + $promedio;
                 $idanterior = 1;
             } else {
-                if ($evaljefe->nro === 1) {
+                if ($evaljefe->nro === 1 && $idanterior > 0) {
                     $totpromediotit = 0;
                     $idanterior = $evaljefe->id - 1;
                     $infmodif = Infevalula::find($idanterior);
-                    $totpromediotit = $infmodif->saldo_prod / $cuentaPreg;
+                    if ($cuentaPreg <= 0) {
+                        $totpromediotit = 0;
+                    } else {
+                        $totpromediotit = $infmodif->saldo_prod / $cuentaPreg;
+                    }
+                    $totpromediotit = round($totpromediotit, 2);
                     $infmodif->saldo_prod = $totpromediotit;
                     $infmodif->promedio_tit = 99;
                     $infmodif->save();
+                    $totpromediotit = 0;
                     $cuentaPreg = 0;
                 }
             }
@@ -105,6 +119,12 @@ class AdminController extends Controller
         //        $infoevaluas = Infevalula::where('jefatura', $lapersona->jefatura->descrip)->delete();
         $borrarinf = Infevalula::where('jefatura', $lapersona->jefatura->descrip)->latest('id')->first();
         if (isset($borrarinf)) {
+            if ($cuentaPreg > 0) {
+                $totpromediotit = $borrarinf->saldo_prod / $cuentaPreg;
+            } else {
+                $totpromediotit = 0;
+            }
+            $borrarinf->saldo_prod = round($totpromediotit, 2);
             $borrarinf->promedio_tit = 99;
             $borrarinf->save();
         }
@@ -148,6 +168,7 @@ class AdminController extends Controller
     {
         $borrarinf = Infjefatura::whereNotNull('id')->delete();
         $elperiodo = Periodo::whereIn('pordefecto', ['on'])->first();
+        $totalpersonasTot = 0;
         if ($request->jefatura_descrip === "Todos") {
             $jefaturaSelect = Jefatura::all();
             $laspersonas = Persona::orderBy('jefatura_id', 'ASC')->get();
@@ -156,6 +177,18 @@ class AdminController extends Controller
             $laspersonas = Persona::whereIn('jefatura_id', [$jefaturaSelect->id])->get();
         }
         $totalPersonas = 0;
+        $tottitulosprom = 0;
+        $subtotcantjefe = 0;
+        $subtotpromjefe = 0;
+        $totalpromanterior = 0;
+        $prom1anterior = 0;
+        $prom2anterior = 0;
+        $prom3anterior = 0;
+        $prom4anterior = 0;
+        $subtotprom1g = 0;
+        $subtotprom2g = 0;
+        $subtotprom3g = 0;
+        $subtotprom4g = 0;
         foreach ($laspersonas as $laspersona) {
             $jefepersona = Persona::find($laspersona->id);
             $borrarinf = new Infjefatura();
@@ -167,12 +200,13 @@ class AdminController extends Controller
             $titulo = Titulo::orderBy('id', 'ASC')->get();
             $cantTitulo = 1;
             $totalPromGral = 0;
+            $totalTotgral = 0;
             foreach ($titulo as $tit) {
                 $totalpuntos = 0;
                 $totalpromed = 0;
                 $laevaluacion = Evalua::where('persona_id', $jefepersona->id);
-                $laevaluacion = $laevaluacion->where('titulo_id', $tit->id);
-                $laevaluacion = $laevaluacion->whereIn('jefatura_eval', [0])->get();
+                $laevaluacion = $laevaluacion->where('titulo_id', $tit->id)->get();
+                //                $laevaluacion = $laevaluacion->whereIn('jefatura_eval', [0])->get();
                 foreach ($laevaluacion as $laeval) {
                     $totalpuntos = $totalpuntos + $laeval->puntos;
                     $totalpromed = $totalpromed + 1;
@@ -180,49 +214,178 @@ class AdminController extends Controller
                 if ($cantTitulo === 1) {
                     if ($totalpromed === 0) {
                         $borrarinf->prom1 = 0;
+                        $prom1anterior = 0;
                     } else {
                         $borrarinf->prom1 = $totalpuntos / $totalpromed;
+                        $totalPromGral = $totalpuntos / $totalpromed;
+                        $prom1anterior = $totalPromGral;
+                        $totalTotgral = $totalTotgral + $totalPromGral;
+                        $tottitulosprom = $tottitulosprom + 1;
+                        $subtotprom1g = $subtotprom1g + $totalPromGral;
                     }
                 }
                 if ($cantTitulo === 2) {
                     if ($totalpromed === 0) {
                         $borrarinf->prom2 = 0;
+                        $prom2anterior = 0;
                     } else {
                         $borrarinf->prom2 = $totalpuntos / $totalpromed;
+                        $totalPromGral = $totalpuntos / $totalpromed;
+                        $prom2anterior = $totalPromGral;
+                        $totalTotgral = $totalTotgral + $totalPromGral;
+                        $tottitulosprom = $tottitulosprom + 1;
+                        $subtotprom2g = $subtotprom2g + $totalPromGral;
                     }
                 }
                 if ($cantTitulo === 3) {
                     if ($totalpromed === 0) {
                         $borrarinf->prom3 = 0;
+                        $prom3anterior = 0;
                     } else {
                         $borrarinf->prom3 = $totalpuntos / $totalpromed;
+                        $totalPromGral = $totalpuntos / $totalpromed;
+                        $prom3anterior = $totalPromGral;
+                        $totalTotgral = $totalTotgral + $totalPromGral;
+                        $tottitulosprom = $tottitulosprom + 1;
+                        $subtotprom3g = $subtotprom3g + $totalPromGral;
                     }
                 }
                 if ($cantTitulo === 4) {
                     if ($totalpromed === 0) {
                         $borrarinf->prom4 = 0;
+                        $prom4anterior = 0;
                     } else {
                         $borrarinf->prom4 = $totalpuntos / $totalpromed;
+                        $totalPromGral = $totalpuntos / $totalpromed;
+                        $prom4anterior = $totalPromGral;
+                        $totalTotgral = $totalTotgral + $totalPromGral;
+                        $tottitulosprom = $tottitulosprom + 1;
+                        $subtotprom4g = $subtotprom4g + $totalPromGral;
                     }
                 }
-                $totalPromGral = $totalPromGral + $totalpuntos;
                 $cantTitulo = $cantTitulo + 1;
+                $totalpuntos = 0;
+                $totalpromed = 0;
             }
-            $borrarinf->promtot = $totalPromGral;
+            if ($tottitulosprom === 0) {
+                $totalTotgral = 0;
+            } else {
+                $totalTotgral = $totalTotgral / $tottitulosprom;
+            }
+            $totalTotgral = round($totalTotgral, 2);
+            $borrarinf->promtot = $totalTotgral;
             $totalPersonas = $totalPersonas + 1;
             $borrarinf->saldo_per = $totalPersonas;
             $borrarinf->save();
+            $subtotpromjefe = $subtotpromjefe + $totalTotgral;
+            $totalpromanterior = $totalTotgral;
+            $tottitulosprom = 0;
+            $totalPromGral = 0;
+            $totalTotgral = 0;
+            ///En el segundo grupo no suma el primer promedio
             $idBorrAnterior = $borrarinf->id - 1;
             $cambioJefatura = Infjefatura::find($idBorrAnterior);
             if (isset($cambioJefatura)) {
                 if ($cambioJefatura->jefatura != $borrarinf->jefatura) {
+                    $subtotpromjefe = $subtotpromjefe - $totalpromanterior;
+                    $subtotprom1g = $subtotprom1g - $prom1anterior;
+                    $subtotprom2g = $subtotprom2g - $prom2anterior;
+                    $subtotprom3g = $subtotprom3g - $prom3anterior;
+                    $subtotprom4g = $subtotprom4g - $prom4anterior;
+                    if ($subtotcantjefe > 0) {
+                        $subtotpromjefe = $subtotpromjefe / $subtotcantjefe;
+                        $subtotprom1g = $subtotprom1g / $subtotcantjefe;
+                        $subtotprom2g = $subtotprom2g / $subtotcantjefe;
+                        $subtotprom3g = $subtotprom3g / $subtotcantjefe;
+                        $subtotprom4g = $subtotprom4g / $subtotcantjefe;
+                    } else {
+                        $subtotpromjefe = 0;
+                        $subtotprom1g = 0;
+                        $subtotprom2g = 0;
+                        $subtotprom3g = 0;
+                        $subtotprom4g = 0;
+                    }
+                    $subtotpromjefe = round($subtotpromjefe, 2);
+                    $cambioJefatura->cant_porjefe = $subtotcantjefe;
+                    $cambioJefatura->tot_promg = $subtotpromjefe;
+                    $cambioJefatura->tot_prom1 = $subtotprom1g;
+                    $cambioJefatura->tot_prom2 = $subtotprom2g;
+                    $cambioJefatura->tot_prom3 = $subtotprom3g;
+                    $cambioJefatura->tot_prom4 = $subtotprom4g;
                     $cambioJefatura->cambio_jefe = 1;
                     $cambioJefatura->save();
+                    $subtotcantjefe = 0;
+                    $subtotpromjefe = $totalpromanterior;
+                    $subtotprom1g = $prom1anterior;
+                    $subtotprom2g = $prom2anterior;
+                    $subtotprom3g = $prom3anterior;
+                    $subtotprom4g = $prom4anterior;
+                    $prom1anterior = 0;
+                    $prom2anterior = 0;
+                    $prom3anterior = 0;
+                    $prom4anterior = 0;
                 }
             }
+            $subtotcantjefe = $subtotcantjefe + 1;
         }
-        $borrarinf->cambio_jefe = 1;
-        $borrarinf->save();
+        $cambioJefatura = Infjefatura::whereNotIn('id', [0])->latest('id')->first();
+        if (isset($cambioJefatura)) {
+            $totalpersonasTot = $cambioJefatura->saldo_per;
+        }
+        if ($subtotcantjefe > 0) {
+            //            $subtotpromjefe = $subtotpromjefe / $subtotcantjefe;
+        } else {
+            $subtotpromjefe = 0;
+        }
+        $subtotpromjefe = $subtotpromjefe - $totalpromanterior;
+        if ($subtotcantjefe > 0) {
+            $subtotpromjefe = $subtotpromjefe / $subtotcantjefe;
+            $subtotprom1g = $subtotprom1g / $subtotcantjefe;
+            $subtotprom2g = $subtotprom2g / $subtotcantjefe;
+            $subtotprom3g = $subtotprom3g / $subtotcantjefe;
+            $subtotprom4g = $subtotprom4g / $subtotcantjefe;
+        } else {
+            $subtotpromjefe = 0;
+            $subtotprom1g = 0;
+            $subtotprom2g = 0;
+            $subtotprom3g = 0;
+            $subtotprom4g = 0;
+        }
+        $subtotpromjefe = round($subtotpromjefe, 2);
+        $cambioJefatura->cant_porjefe = $subtotcantjefe;
+        $cambioJefatura->tot_promg = $subtotpromjefe;
+        $cambioJefatura->tot_prom1 = $subtotprom1g;
+        $cambioJefatura->tot_prom2 = $subtotprom2g;
+        $cambioJefatura->tot_prom3 = $subtotprom3g;
+        $cambioJefatura->tot_prom4 = $subtotprom4g;
+        $cambioJefatura->cambio_jefe = 1;
+        $cambioJefatura->save();
+        $subtotcantjefe = 0;
+        $subtotpromjefe = 0;
+        $subtotprom1g = 0;
+        $subtotprom2g = 0;
+        $subtotprom3g = 0;
+        $subtotprom4g = 0;
+        $subtotpromjefe = 0;
+        //Para el total final seleccionar todos los registros con subtotal jefaturas y sumar. Agregar un total general como 99 en último registro
+        $cambioJefatura = Infjefatura::whereIn('cambio_jefe', [1])->get();
+        foreach ($cambioJefatura as $cambioJefaturaFin) {
+            $subtotprom1g = $subtotprom1g + $cambioJefaturaFin->tot_prom1;
+            $subtotprom2g = $subtotprom2g + $cambioJefaturaFin->tot_prom2;
+            $subtotprom3g = $subtotprom3g + $cambioJefaturaFin->tot_prom3;
+            $subtotprom4g = $subtotprom4g + $cambioJefaturaFin->tot_prom4;
+            $subtotpromjefe = $subtotpromjefe + $cambioJefaturaFin->tot_promg;
+        }
+        if ($totalpersonasTot > 0) {
+            $cambioJefatura = Infjefatura::whereNotIn('id', [0])->latest('id')->first();
+            $cambioJefatura->estotal = 99;
+            $cambioJefatura->totalgral1 = $subtotprom1g / $totalpersonasTot;
+            $cambioJefatura->totalgral2 = $subtotprom2g / $totalpersonasTot;
+            $cambioJefatura->totalgral3 = $subtotprom3g / $totalpersonasTot;
+            $cambioJefatura->totalgral4 = $subtotprom4g / $totalpersonasTot;
+            $cambioJefatura->totalgraltot = $subtotpromjefe / $totalpersonasTot;
+            $cambioJefatura->save();
+        }
         $borrarinf = Infjefatura::all();
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('/layouts/admin/infJefaturaPdf', [
@@ -605,7 +768,6 @@ class AdminController extends Controller
     {
         //        $personas = Persona::paginate(5);
         $lapersona = Persona::where('persona_doc', Auth::user()->documento)->first();
-
         if (empty($lapersona)) {
         } else {
             $jefatura = Cargo::where('id', $lapersona->cargo_id)->first();
@@ -623,7 +785,8 @@ class AdminController extends Controller
         if (!empty($personasView)) {
             foreach ($personasView as $personaView) {
                 $cuenta = Evalua::where('persona_id', $personaView->id)
-                    ->whereNull('jefatura_eval')
+                    ->whereIn('jefatura_eval', [0])
+                    ->where('puntos', '>', 0)
                     ->whereIn('confirmado', [0, 1, 2])->count();
                 if (!empty($cuenta)) {
                     $personaEdita = Persona::find($personaView->id);
@@ -694,6 +857,7 @@ class AdminController extends Controller
                         $autoevalnew->pregunta_id = $pregunta->id;
                         $autoevalnew->periodo = $periodosSelec->descrip;
                         $autoevalnew->confirmado = 0;
+                        $autoevalnew->jefatura_eval = 0;
                         $autoevalnew->save();
                     }
                     $autoevalView = Evalua::where('titulo_id', $request->titulo_id);
@@ -1153,7 +1317,7 @@ class AdminController extends Controller
         $persona = Persona::where('persona_doc', $documento)->first();
         if (isset($persona)) {
             $autoevalua = Evalua::where('persona_id', $persona->id)
-                ->whereNull('jefatura_eval')->get();
+                ->whereIn('jefatura_eval', [0])->get();
             if ($autoevalua->isEmpty()) {
             } else {
                 foreach ($autoevalua as $autoeval) {
@@ -1186,7 +1350,9 @@ class AdminController extends Controller
                 $persona->autoeval_fin = 2;
                 $persona->save();
             }
-            return redirect()->back()->with('mensaje', "Evaluación cerrada correctamente.");
+            return view('/layouts/admin/evaluaCreate')->with('mensaje', "Evaluación cerrada correctamente");
+
+            ///            return redirect()->back()->with('mensaje', "Evaluación cerrada correctamente.");
         } else {
             return redirect()->back()->with('mensaje', "ATENCION! No se pudo actualizar el registro.");
         }
