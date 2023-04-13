@@ -397,6 +397,111 @@ class AdminController extends Controller
         return $pdf->download('eval-jefatura.pdf');
     }
 
+    public function informeCargoCreate(Request $request)
+    {
+        $borrarinf = Infjefatura::whereNotNull('id')->delete();
+        $elperiodo = Periodo::whereIn('pordefecto', ['on'])->first();
+        if ($request->cargo_descrip === "Todos") {
+            $cargoSelect = Cargo::all();
+            //            $laspersonas = Persona::orderBy('cargo_id', 'ASC')->get();
+        } else {
+            $cargoSelect = Cargo::whereIn('descrip', [$request->cargo_descrip])->first();
+            //            $laspersonas = Persona::whereIn('cargo_id', [$cargoSelect->id])->get();
+        }
+        $subtotprom1g = 0;
+        foreach ($cargoSelect as $elcargoSelect) {
+            $descripCargo = Cargo::find($elcargoSelect->id);
+            $borrarinf = new Infjefatura();
+            $borrarinf->persona_nom = $descripCargo->descrip;
+            $borrarinf->persona_id = $descripCargo->id;
+            $borrarinf->periodo = $elperiodo->descrip;
+            $borrarinf->jefatura = $descripCargo->jefatura->descrip;
+            //recorrer los tìtulos
+            $laevaluacion = Evalua::whereIn('cargo_id', [$elcargoSelect->id]);
+            $laevaluacion = $laevaluacion->whereIn('periodo', [$elperiodo->descrip]);
+            $laevaluacion = $laevaluacion->whereNotIn('jefatura_eval', [1])->get();
+            $totalPromGral = 0;
+            $totalTotgral = 0;
+            $totalpuntos = 0;
+            $totalpromed = 0;
+            $totalTotCant = 0;
+            foreach ($laevaluacion as $laevalSelect) {
+                $totalpuntos = $totalpuntos + $laevalSelect->puntos;
+                $totalpromed = $totalpromed + 1;
+                //                $laevaluacion = $laevaluacion->whereIn('jefatura_eval', [0])->get();
+            }
+            if ($totalpromed > 0) {
+                $totalPromGral = $totalpuntos / $totalpromed;
+            } else {
+                $totalPromGral = 0;
+            }
+            $totalPromGral = round($totalPromGral, 2);
+            $totalTotgral = $totalPromGral;
+            $totalTotCant = $totalpromed;
+            $borrarinf->prom1 = $totalPromGral;
+            $laevaluacion = Evalua::whereIn('cargo_id', [$elcargoSelect->id]);
+            $laevaluacion = $laevaluacion->whereIn('periodo', [$elperiodo->descrip]);
+            $laevaluacion = $laevaluacion->whereIn('jefatura_eval', [1])->get();
+            $totalpuntos = 0;
+            $totalpromed = 0;
+            $totalPromGral = 0;
+            foreach ($laevaluacion as $laevalSelect) {
+                $totalpuntos = $totalpuntos + $laevalSelect->puntos;
+                $totalpromed = $totalpromed + 1;
+                //                $laevaluacion = $laevaluacion->whereIn('jefatura_eval', [0])->get();
+            }
+            if ($totalpromed > 0) {
+                $totalPromGral = $totalpuntos / $totalpromed;
+            } else {
+                $totalPromGral = 0;
+            }
+            $totalPromGral = round($totalPromGral, 2);
+            $totalTotgral = $totalTotgral + $totalPromGral;
+            $totalTotCant = $totalTotCant + $totalpromed;
+            $borrarinf->prom2 = $totalPromGral;
+            //            if ($totalTotCant > 0) {
+            //                $subtotprom1g = $totalTotgral / $totalTotCant;
+            //                $subtotprom1g = round($subtotprom1g, 2);
+            //            } else {
+            ///                $subtotprom1g = 0;
+            //            }
+            if ($totalTotgral > 0) {
+                $totalTotgral = $totalTotgral / 2;
+                $totalTotgral = round($totalTotgral, 2);
+                //                $borrarinf->promedio = $subtotprom1g;
+                $borrarinf->promedio = $totalTotgral;
+            } else {
+                $borrarinf->promedio = 0;
+            }
+            $borrarinf->save();
+        }
+        $borrarinf = Infjefatura::all();
+        $pdf = app('dompdf.wrapper');
+        $pdf->loadView('/layouts/admin/infCargoPdf', [
+            'elperiodo' => $elperiodo,
+            'cargoSelect' => $cargoSelect,
+            'borrarinf' => $borrarinf,
+        ])->setPaper('a4', 'landscape');
+        return $pdf->download('eval-cargo.pdf');
+    }
+
+    public function informeCargo()
+    {
+        if (auth()->user()->admin === "on") {
+            $cargos = Cargo::all();
+            $periodos = Periodo::whereIn('pordefecto', ['on'])->first();
+            if (!isset($periodos)) {
+                $periodos = Periodo::all();
+            }
+            return view('/layouts/admin/informeCargos', [
+                'cargos' => $cargos,
+                'periodos' => $periodos,
+            ]);
+        } else {
+            return view('errors/noHabilitado');
+        }
+    }
+
     public function showCargoCreate()
     {
         $cargos = Cargo::all();
@@ -852,6 +957,7 @@ class AdminController extends Controller
                         $autoevalnew->fecha = date('Y-m-d');
                         $autoevalnew->persona_id = $lapersona->id;
                         $autoevalnew->jefatura_id = $lapersona->jefatura_id;
+                        $autoevalnew->cargo_id = $lapersona->cargo_id;
                         $autoevalnew->titulo_id = $request->titulo_id;
                         $autoevalnew->puntos = 0;
                         $autoevalnew->pregunta_id = $pregunta->id;
@@ -938,6 +1044,7 @@ class AdminController extends Controller
                         $autoevalnew->fecha = date('Y-m-d');
                         $autoevalnew->persona_id = $lapersona->id;
                         $autoevalnew->jefatura_id = $lapersona->jefatura_id;
+                        $autoevalnew->cargo_id = $lapersona->cargo_id;
                         $autoevalnew->titulo_id = $request->titulo_id;
                         $autoevalnew->puntos = 0;
                         $autoevalnew->pregunta_id = $pregunta->id;
@@ -1350,9 +1457,8 @@ class AdminController extends Controller
                 $persona->autoeval_fin = 2;
                 $persona->save();
             }
-            return view('/layouts/admin/evaluaCreate')->with('mensaje', "Evaluación cerrada correctamente");
-
-            ///            return redirect()->back()->with('mensaje', "Evaluación cerrada correctamente.");
+            ///            return view('/layouts/admin/evaluaCreate')->with('mensaje', "Evaluación cerrada correctamente");
+            return redirect()->back()->with('mensaje', "Evaluación cerrada correctamente.");
         } else {
             return redirect()->back()->with('mensaje', "ATENCION! No se pudo actualizar el registro.");
         }

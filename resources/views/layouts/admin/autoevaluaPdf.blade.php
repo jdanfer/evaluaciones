@@ -35,19 +35,15 @@
 
     </div>
 </div>
-<div class="row">
-  <div class="col-lg-8 col-md-8">
-    <div class="card">
-      <div class="table-responsive">
-        <table class="table align-items-center mb-0">
+<table border="1">
         <thead>
            <tr>
-            <th class="table-success">Nro</th>
-            <th class="table-success">Descripción de pregunta</th>
-            <th style="width: 50px" class="table-success">Auto</th>
-            <th class="table-success">Eval</th>
-            <th class="table-success">Promed.</th>
-            <th class="table-success">Observaciones</th>
+            <th style="width: 60px" class="table-success">Nro</th>
+            <th style="width: 470px" class="table-success">Descripción de pregunta</th>
+            <th style="width: 80px; text-align: center" class="table-success">Auto</th>
+            <th style="width: 80px; text-align: center" class="table-success">Eval</th>
+            <th style="width: 100px; text-align: center" class="table-success">Promed.</th>
+            <th style="width: 200px" class="table-success">Observaciones</th>
           </tr>
         </thead>
         <tbody>
@@ -59,23 +55,31 @@
                 </tr>
             @endif
             <tr>
-              <td>{{$borrareva->nro}}</td>
-              <td>{{$borrareva->descrip}}</td>
-              <td>{{$borrareva->autoeval}}</td>
-              <td>{{$borrareva->evalua}}</td>
-              <td>{{$borrareva->promedio}}</td>
-              <td>{{$borrareva->observa}}</td>
+              <td style="width: 60px">{{$borrareva->nro}}</td>
+              <td style="width: 470px">{{$borrareva->descrip}}</td>
+              <td style="width: 80px; text-align: center">{{$borrareva->autoeval}}</td>
+              <td style="width: 80px; text-align: center">{{$borrareva->evalua}}</td>
+              <td style="width: 100px; text-align: center">{{$borrareva->promedio}}</td>
+              <td style="width: 200px">{{$borrareva->observa}}</td>
             </tr>
             @if ($borrareva->promedio_tit===99)
                <tr>
                  <td class="bg-success" style="color: white">#</td>
-                 <td class="bg-success" style="color: white">Sub-Total Promedio:{{$borrareva->saldo_prod}}</td>
-               </tr>
+                 <td class="bg-success" style="color: white">Sub-Total Promedio por título: {{$borrareva->saldo_prod}}</td>
+                 <td class="bg-success"></td>
+                 <td class="bg-success"></td>
+                 <td class="bg-success"></td>
+                 <td class="bg-success"></td>
+                </tr>
             @endif 
           @endforeach  
           <tr>
             <td class="bg-success" style="color: white">#</td>
-            <td class="bg-success" style="color: white">Promedio total:{{$totalprod}}</td>
+            <td class="bg-success" style="color: white">Promedio total: {{$totalprod}}</td>
+            <td class="bg-success"></td>
+            <td class="bg-success"></td>
+            <td class="bg-success"></td>
+            <td class="bg-success"></td>
           </tr>
 
         </tbody>

@@ -104,12 +104,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('admin/autoevaluacion/{documento}/cerrar', ['as' => 'admin/autoevaluacion/{documento}/cerrar', 'uses' => 'App\Http\Controllers\AdminController@showAutoevalCierre']);
     Route::get('admin/evaluacion/{id}/cerrar', ['as' => 'admin/evaluacion/{id}/cerrar', 'uses' => 'App\Http\Controllers\AdminController@showEvalCierre']);
 
-    //PDF
+    //PDF inf evaluación
     Route::get('admin/evaluacion/{documento}/pdf', ['as' => 'admin/evaluacion/{documento}/pdf', 'uses' => 'App\Http\Controllers\AdminController@generarPDF']);
 
-    //Informes
+    //Informes por jefaturas
     Route::get('admin/informes/jefaturas', ['as' => 'admin/informes/jefaturas', 'uses' => 'App\Http\Controllers\AdminController@informeJefatura']);
     Route::get('admin/informes/jefaturasInf', ['as' => 'admin/informes/jefaturasInf', 'uses' => 'App\Http\Controllers\AdminController@informeJefaturaCreate']);
+    //Informes por cargo
+    Route::get('admin/informes/cargos', ['as' => 'admin/informes/cargos', 'uses' => 'App\Http\Controllers\AdminController@informeCargo']);
+    Route::get('admin/informes/cargosInf', ['as' => 'admin/informes/cargosInf', 'uses' => 'App\Http\Controllers\AdminController@informeCargoCreate']);
 
     //    Route::get('tablasdelsistema', ['as' => 'tablasdelsistema', 'uses' => 'App\Http\Controllers\AdminController@showTabla']);
     //    Route::get('permisos/crear', ['as' => 'permisos.crear', 'uses' => 'App\Http\Controllers\AdminController@showPermisoCreate']);

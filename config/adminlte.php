@@ -333,7 +333,7 @@ return [
                 [
                     'text' => 'Promedios por cargo',
                     'icon' => 'fas fa-solid fa-users',
-                    'url'  => '#',
+                    'url'  => 'admin/informes/cargos',
                 ],
                 [
                     'text' => 'Promedios por pregunta',

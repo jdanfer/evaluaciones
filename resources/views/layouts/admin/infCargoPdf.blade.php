@@ -21,7 +21,7 @@
       <a>
         <img style="width: 80px; height:40" id="header-logo" src="vendor/adminlte/dist/img/logo2p.png"/>
       </a>
-      <h3 style="color:blue">Promedios por Jefaturas</h3>
+      <h3 style="color:blue">Promedios por Cargo</h3>
       <table class="table table-sm">
         <thead>
           <tr>
@@ -35,12 +35,10 @@
 <table border="1">
         <thead>
            <tr>
-            <th style="width: 340px; color: white" class="bg-primary">Nombre</th>
-            <th style="width: 130px; color: white; text-align: center" class="bg-primary">Competencias</th>
-            <th style="width: 130px; color: white; text-align: center" class="bg-primary">Responsab.</th>
-            <th style="width: 130px; color: white; text-align: center" class="bg-primary">Funciones</th>
-            <th style="width: 130px; color: white; text-align: center" class="bg-primary">Actitud</th>
-            <th style="width: 130px; color: white; text-align: center" class="bg-primary">Total</th>
+            <th style="width: 440px; color: white" class="bg-primary">Cargos</th>
+            <th style="width: 140px; color: white; text-align: center" class="bg-primary">Autoeval.</th>
+            <th style="width: 140px; color: white; text-align: center" class="bg-primary">Evaluac.</th>
+            <th style="width: 140px; color: white; text-align: center" class="bg-primary">Promedio</th>
           </tr>
         </thead>
         <tbody>
@@ -49,32 +47,12 @@
               <td>{{$borrareva->persona_nom}}</td>
               <td style="text-align: center">{{$borrareva->prom1}}</td>
               <td style="text-align: center">{{$borrareva->prom2}}</td>
-              <td style="text-align: center">{{$borrareva->prom3}}</td>
-              <td style="text-align: center">{{$borrareva->prom4}}</td>
-              <td style="text-align: center">{{$borrareva->promtot}}</td>
+              <td style="text-align: center">{{$borrareva->promedio}}</td>
             </tr>
             @if ($borrareva->cambio_jefe===1)
               <tr>
                 <td class="bg-success" style="color: white; text-align: center">Sub-Total {{$borrareva->jefatura}}: {{$borrareva->cant_porjefe}}</td>
-                <td class="bg-success" style="color: white; text-align: center">{{$borrareva->tot_prom1}}</td>
-                <td class="bg-success" style="color: white; text-align: center">{{$borrareva->tot_prom2}}</td>
-                <td class="bg-success" style="color: white; text-align: center">{{$borrareva->tot_prom3}}</td>
-                <td class="bg-success" style="color: white; text-align: center">{{$borrareva->tot_prom4}}</td>
-                <td class="bg-success" style="color: white; text-align: center">{{$borrareva->tot_promg}}</td>
               </tr>
-            @endif
-            @if ($borrareva->estotal===99)
-              <br>
-              <tr>
-                <td class="bg-success" style="color: white; text-align: center">Total personas: {{$borrareva->saldo_per}}</td>
-                <td class="bg-success" style="color: white; text-align: center">{{$borrareva->totalgral1}}</td>
-                <td class="bg-success" style="color: white; text-align: center">{{$borrareva->totalgral2}}</td>
-                <td class="bg-success" style="color: white; text-align: center">{{$borrareva->totalgral3}}</td>
-                <td class="bg-success" style="color: white; text-align: center">{{$borrareva->totalgral4}}</td>
-                <td class="bg-success" style="color: white; text-align: center">{{$borrareva->totalgraltot}}</td>
-    
-              </tr>
-  
             @endif
           @endforeach  
         </tbody>
