@@ -84,6 +84,15 @@
 
         </tbody>
       </table>
+      <br>
+      @foreach($borrarinf as $borrareva)
+        @if ($borrareva->fecha !=null)
+        <div>
+          <h4 style="color:blue">Fecha actual: {{$borrareva->fecha}}</h4>
+        </div>
+        @endif 
+      @endforeach
+      
     </div>
   </div>     
 </div>

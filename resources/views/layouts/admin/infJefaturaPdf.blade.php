@@ -79,6 +79,14 @@
           @endforeach  
         </tbody>
 </table>
+<br>
+@foreach($borrarinf as $borrareva)
+  @if ($borrareva->fecha !=null)
+  <div>
+    <h4 style="color:blue">Fecha actual: {{$borrareva->fecha}}</h4>
+  </div>
+  @endif 
+@endforeach
 
 <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>

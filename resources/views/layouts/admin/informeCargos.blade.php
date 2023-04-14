@@ -26,7 +26,6 @@
                <div style="padding-left: 10px" class="form-group">
                    <label  for="select-cargo">Cargo</label>
                    <select id="select-cargo" class="form-control input-sm" name="cargo_descrip">
-                       <option value="">Seleccionar...</option>
                        <option value="Todos">Todos</option>
                        @foreach ($cargos as $cargo)
                           @if (old('cargo_descrip') == $cargo->descrip)

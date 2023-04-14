@@ -12,26 +12,25 @@
           <!-- general form elements -->
           <div class="card card-primary">
             <div class="card-header">
-              <h3 class="card-title">Informes de Promedios por Jefaturas</h3>
+              <h3 class="card-title">Informes de Promedios por Preguntas</h3>
             </div>
             <br>
             <div class="card-header">
               <h4 class="card-title">Período seleccionado: {{$periodos->descrip}}</h4>
             </div>
-
             <!-- /.card-header -->
             <!-- form start -->
-           <form action="{{ url('/admin/informes/jefaturasInf') }}" method="get">
+           <form action="{{ url('/admin/informes/preguntasInf') }}" method="get">
                @csrf
                <div style="padding-left: 10px" class="form-group">
-                   <label  for="select-jefatura">Jefatura</label>
-                   <select id="select-jefatura" class="form-control input-sm" name="jefatura_descrip">
+                   <label  for="select-titulo">Título</label>
+                   <select id="select-titulo" class="form-control input-sm" name="titulo_descrip">
                        <option value="Todos">Todos</option>
-                       @foreach ($jefaturas as $jefatura)
-                          @if (old('jefatura_descrip') == $jefatura->descrip)
-                             <option value="{{ $jefatura->descrip }}" selected>{{ $jefatura->descrip }}</option>
+                       @foreach ($titulos as $titulo)
+                          @if (old('titulo_descrip') == $titulo->descrip)
+                             <option value="{{ $titulo->descrip }}" selected>{{ $titulo->descrip }}</option>
                           @else
-                             <option value="{{ $jefatura->descrip }}">{{ $jefatura->descrip }}</option>
+                             <option value="{{ $titulo->descrip }}">{{ $titulo->descrip }}</option>
                           @endif
                        @endforeach
                     </select>

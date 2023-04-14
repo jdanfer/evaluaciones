@@ -338,7 +338,7 @@ return [
                 [
                     'text' => 'Promedios por pregunta',
                     'icon' => 'fas fa-solid fa-users',
-                    'url'  => '#',
+                    'url'  => 'admin/informes/preguntas',
                 ],
 
             ],

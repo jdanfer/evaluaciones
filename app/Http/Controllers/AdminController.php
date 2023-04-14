@@ -130,6 +130,12 @@ class AdminController extends Controller
         }
 
         //        $autoevaluas = Evalua::all();
+        $borrarinf = Infevalula::where('jefatura', $lapersona->jefatura->descrip)->latest('id')->first();
+        if (isset($borrarinf)) {
+            $borrarinf->fecha = date('d-m-Y');
+            $borrarinf->save();
+        }
+
         $borrarinf = Infevalula::where('jefatura', $lapersona->jefatura->descrip)->get();
         $totalprod = $totalprod / $total;
         $totalprod = number_format($totalprod, 2, '.', ',');
@@ -386,6 +392,11 @@ class AdminController extends Controller
             $cambioJefatura->totalgraltot = $subtotpromjefe / $totalpersonasTot;
             $cambioJefatura->save();
         }
+        $borrarinf = Infjefatura::whereNotIn('id', [0])->latest('id')->first();
+        if (isset($borrarinf)) {
+            $borrarinf->fecha = date('d-m-Y');
+            $borrarinf->save();
+        }
         $borrarinf = Infjefatura::all();
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('/layouts/admin/infJefaturaPdf', [
@@ -475,6 +486,11 @@ class AdminController extends Controller
             }
             $borrarinf->save();
         }
+        $borrarinf = Infjefatura::whereNotIn('id', [0])->latest('id')->first();
+        if (isset($borrarinf)) {
+            $borrarinf->fecha = date('d-m-Y');
+            $borrarinf->save();
+        }
         $borrarinf = Infjefatura::all();
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('/layouts/admin/infCargoPdf', [
@@ -495,6 +511,23 @@ class AdminController extends Controller
             }
             return view('/layouts/admin/informeCargos', [
                 'cargos' => $cargos,
+                'periodos' => $periodos,
+            ]);
+        } else {
+            return view('errors/noHabilitado');
+        }
+    }
+
+    public function informePregunta()
+    {
+        if (auth()->user()->admin === "on") {
+            $titulos = Titulo::all();
+            $periodos = Periodo::whereIn('pordefecto', ['on'])->first();
+            if (!isset($periodos)) {
+                $periodos = Periodo::all();
+            }
+            return view('/layouts/admin/informePreguntas', [
+                'titulos' => $titulos,
                 'periodos' => $periodos,
             ]);
         } else {
