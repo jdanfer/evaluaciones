@@ -12,6 +12,7 @@ use App\Models\Persona;
 use App\Models\Periodo;
 use App\Models\Infevalula;
 use App\Models\Infjefatura;
+use App\Models\Infpregunta;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\PDF;
@@ -518,21 +519,344 @@ class AdminController extends Controller
         }
     }
 
+    public function informePreguntaCreate(Request $request)
+    {
+        $borrarinf = Infpregunta::whereNotNull('id')->delete();
+        $elperiodo = Periodo::whereIn('pordefecto', ['on'])->first();
+        if ($request->cargo_descrip === "Todos") {
+            $cargoSelect = Cargo::all();
+            //            $laspersonas = Persona::orderBy('cargo_id', 'ASC')->get();
+        } else {
+            $cargoSelect = Cargo::whereIn('descrip', [$request->cargo_descrip])->first();
+            //            $laspersonas = Persona::whereIn('cargo_id', [$cargoSelect->id])->get();
+        }
+        $subtotprom = 0;
+        $totalpersonas = 0;
+        $subtotpersonas = 0;
+        foreach ($cargoSelect as $elcargoSelect) {
+            $laspersonas = Persona::where('cargo_id', $elcargoSelect->id)->get();
+            $subtotcargop1 = 0;
+            $subtotcargop2 = 0;
+            $subtotcargop3 = 0;
+            $subtotcargop4 = 0;
+            $subtotcargop5 = 0;
+            $subtotcargop6 = 0;
+            $subtotcargop7 = 0;
+            $subtotcargop8 = 0;
+            $subtotcargop9 = 0;
+            $subtotcargop10 = 0;
+            $subtotcargop11 = 0;
+            $subtotcargop12 = 0;
+            $subtotcargop13 = 0;
+            $subtotcargop14 = 0;
+            $subtotcargop15 = 0;
+            $subtotcargop16 = 0;
+            $subtotcargopSub1 = 0;
+            $subtotcargopSub2 = 0;
+            $subtotcargopSub3 = 0;
+            $subtotcargopSub4 = 0;
+            $subtotcargopSubT = 0;
+
+            foreach ($laspersonas as $lapersona) {
+                $borrarinf = new Infpregunta();
+                $borrarinf->persona_nom = $lapersona->persona_nom1 . " " . $lapersona->persona_ape1;
+                $borrarinf->jefatura = $elcargoSelect->descrip;
+                $borrarinf->periodo = $elperiodo->descrip;
+                $laevaluacion = Evalua::whereIn('persona_id', [$lapersona->id]);
+                $laevaluacion = $laevaluacion->whereIn('periodo', [$elperiodo->descrip])->get();
+                $p1 = 0;
+                $p2 = 0;
+                $p3 = 0;
+                $p4 = 0;
+                $p5 = 0;
+                $p6 = 0;
+                $p7 = 0;
+                $p8 = 0;
+                $p9 = 0;
+                $p10 = 0;
+                $p11 = 0;
+                $p12 = 0;
+                $p13 = 0;
+                $p14 = 0;
+                $p15 = 0;
+                $p16 = 0;
+                $subtot1 = 0;
+                $subtot2 = 0;
+                $subtot3 = 0;
+                $subtot4 = 0;
+                $subtottot = 0;
+                //promedio de cada pregunta (sumar autoeval + eval y / 2)
+                foreach ($laevaluacion as $eval) {
+                    $lapregunta = Pregunta::find($eval->pregunta_id);
+                    if (isset($lapregunta)) {
+                        if ($lapregunta->pregunta_nro === 1) {
+                            $p1 = $p1 + $eval->puntos;
+                        }
+                        if ($lapregunta->pregunta_nro === 2) {
+                            $p2 = $p2 + $eval->puntos;
+                        }
+                        if ($lapregunta->pregunta_nro === 3) {
+                            $p3 = $p3 + $eval->puntos;
+                        }
+                        if ($lapregunta->pregunta_nro === 4) {
+                            $p4 = $p4 + $eval->puntos;
+                        }
+                        if ($lapregunta->pregunta_nro === 5) {
+                            $p5 = $p5 + $eval->puntos;
+                        }
+                        if ($lapregunta->pregunta_nro === 6) {
+                            $p6 = $p6 + $eval->puntos;
+                        }
+                        if ($lapregunta->pregunta_nro === 7) {
+                            $p7 = $p7 + $eval->puntos;
+                        }
+                        if ($lapregunta->pregunta_nro === 8) {
+                            $p8 = $p8 + $eval->puntos;
+                        }
+                        if ($lapregunta->pregunta_nro === 9) {
+                            $p9 = $p9 + $eval->puntos;
+                        }
+                        if ($lapregunta->pregunta_nro === 10) {
+                            $p10 = $p10 + $eval->puntos;
+                        }
+                        if ($lapregunta->pregunta_nro === 11) {
+                            $p11 = $p11 + $eval->puntos;
+                        }
+                        if ($lapregunta->pregunta_nro === 12) {
+                            $p12 = $p12 + $eval->puntos;
+                        }
+                        if ($lapregunta->pregunta_nro === 13) {
+                            $p13 = $p13 + $eval->puntos;
+                        }
+                        if ($lapregunta->pregunta_nro === 14) {
+                            $p14 = $p14 + $eval->puntos;
+                        }
+                        if ($lapregunta->pregunta_nro === 15) {
+                            $p15 = $p15 + $eval->puntos;
+                        }
+                        if ($lapregunta->pregunta_nro === 16) {
+                            $p16 = $p16 + $eval->puntos;
+                        }
+                    }
+                }
+                $p1 = $p1 / 2;
+                $p2 = $p2 / 2;
+                $p3 = $p3 / 2;
+                $p4 = $p4 / 2;
+                $p5 = $p5 / 2;
+                $p6 = $p6 / 2;
+                $p7 = $p7 / 2;
+                $p8 = $p8 / 2;
+                $p9 = $p9 / 2;
+                $p10 = $p10 / 2;
+                $p11 = $p11 / 2;
+                $p12 = $p12 / 2;
+                $p13 = $p13 / 2;
+                $p14 = $p14 / 2;
+                $p15 = $p15 / 2;
+                $p16 = $p16 / 2;
+                $subtotprom = $p1 + $p2 + $p3 + $p4 + $p5 + $p6 + $p7 + $p8 + $p9 + $p10 + $p11 + $p12 + $p13 + $p14 + $p15 + $p16;
+                $borrarinf->p1 = $p1;
+                $borrarinf->p2 = $p2;
+                $borrarinf->p3 = $p3;
+                $borrarinf->p4 = $p4;
+                $borrarinf->p5 = $p5;
+                $borrarinf->p6 = $p6;
+                $borrarinf->p7 = $p7;
+                $borrarinf->p8 = $p8;
+                $borrarinf->p9 = $p9;
+                $borrarinf->p10 = $p10;
+                $borrarinf->p11 = $p11;
+                $borrarinf->p12 = $p12;
+                $borrarinf->p13 = $p13;
+                $borrarinf->p14 = $p14;
+                $borrarinf->p15 = $p15;
+                $borrarinf->p16 = $p16;
+                $borrarinf->tot_promg = $subtotprom;
+                $subtot1 = $p1 + $p2 + $p3 + $p4;
+                $subtot1 = $subtot1 / 4;
+                $subtot1 = round($subtot1, 2);
+                $subtot2 = $p5 + $p6 + $p7 + $p8;
+                $subtot2 = $subtot2 / 4;
+                $subtot2 = round($subtot2, 2);
+                $subtot3 = $p9 + $p10 + $p11 + $p12;
+                $subtot3 = $subtot3 / 4;
+                $subtot3 = round($subtot3, 2);
+                $subtot4 = $p13 + $p14 + $p15 + $p16;
+                $subtot4 = $subtot4 / 4;
+                $subtot4 = round($subtot4, 2);
+                $borrarinf->prom1 = $subtot1;
+                $borrarinf->prom2 = $subtot2;
+                $borrarinf->prom3 = $subtot3;
+                $borrarinf->prom4 = $subtot4;
+                $subtottot = $subtot1 + $subtot2 + $subtot3 + $subtot4;
+                $subtottot = $subtottot / 4;
+                $subtottot = round($subtottot, 2);
+                $borrarinf->promtot = $subtottot;
+                $borrarinf->save();
+                $totalpersonas = $totalpersonas + 1;
+                $subtotcargop1 = $subtotcargop1 + $p1;
+                $subtotcargop2 = $subtotcargop2 + $p2;
+                $subtotcargop3 = $subtotcargop3 + $p3;
+                $subtotcargop4 = $subtotcargop4 + $p4;
+                $subtotcargop5 = $subtotcargop5 + $p5;
+                $subtotcargop6 = $subtotcargop6 + $p6;
+                $subtotcargop7 = $subtotcargop7 + $p7;
+                $subtotcargop8 = $subtotcargop8 + $p8;
+                $subtotcargop9 = $subtotcargop9 + $p9;
+                $subtotcargop10 = $subtotcargop10 + $p10;
+                $subtotcargop11 = $subtotcargop11 + $p11;
+                $subtotcargop12 = $subtotcargop12 + $p12;
+                $subtotcargop13 = $subtotcargop13 + $p13;
+                $subtotcargop14 = $subtotcargop14 + $p14;
+                $subtotcargop15 = $subtotcargop15 + $p15;
+                $subtotcargop16 = $subtotcargop16 + $p16;
+                $subtotpersonas = $subtotpersonas + 1;
+            }
+            $subtotprom = 0;
+            ///acá grabar los subtotales por cambio de cargo
+            $borrarinf = Infpregunta::whereNotIn('id', [0])->latest('id')->first();
+            if (isset($borrarinf)) {
+                $borrarinf->estotal = 99;
+                $borrarinf->sp1 = $subtotcargop1;
+                $borrarinf->sp2 = $subtotcargop2;
+                $borrarinf->sp3 = $subtotcargop3;
+                $borrarinf->sp4 = $subtotcargop4;
+                $borrarinf->sp5 = $subtotcargop5;
+                $borrarinf->sp6 = $subtotcargop6;
+                $borrarinf->sp7 = $subtotcargop7;
+                $borrarinf->sp8 = $subtotcargop8;
+                $borrarinf->sp9 = $subtotcargop9;
+                $borrarinf->sp10 = $subtotcargop10;
+                $borrarinf->sp11 = $subtotcargop11;
+                $borrarinf->sp12 = $subtotcargop12;
+                $borrarinf->sp13 = $subtotcargop13;
+                $borrarinf->sp14 = $subtotcargop14;
+                $borrarinf->sp15 = $subtotcargop15;
+                $borrarinf->sp16 = $subtotcargop16;
+                $subtotcargopSub1 = $subtotcargop1 + $subtotcargop2 + $subtotcargop3 + $subtotcargop4;
+                $subtotcargopSub2 = $subtotcargop5 + $subtotcargop6 + $subtotcargop7 + $subtotcargop8;
+                $subtotcargopSub3 = $subtotcargop9 + $subtotcargop10 + $subtotcargop11 + $subtotcargop12;
+                $subtotcargopSub4 = $subtotcargop13 + $subtotcargop14 + $subtotcargop15 + $subtotcargop16;
+                $subtotcargopSub1 = $subtotcargopSub1 / 4;
+                $subtotcargopSub2 = $subtotcargopSub2 / 4;
+                $subtotcargopSub3 = $subtotcargopSub3 / 4;
+                $subtotcargopSub4 = $subtotcargopSub4 / 4;
+                $subtotcargopSub1 = round($subtotcargopSub1, 2);
+                $subtotcargopSub2 = round($subtotcargopSub2, 2);
+                $subtotcargopSub3 = round($subtotcargopSub3, 2);
+                $subtotcargopSub4 = round($subtotcargopSub4, 2);
+                $subtotcargopSubT = $subtotcargopSub1 + $subtotcargopSub2 + $subtotcargopSub3 + $subtotcargopSub4;
+                $subtotcargopSubT = $subtotcargopSubT / 4;
+                $subtotcargopSubT = round($subtotcargopSubT, 2);
+                $borrarinf->sptotg1 = $subtotcargopSub1;
+                $borrarinf->sptotg2 = $subtotcargopSub2;
+                $borrarinf->sptotg3 = $subtotcargopSub3;
+                $borrarinf->sptotg4 = $subtotcargopSub4;
+                $borrarinf->sptotg = $subtotcargopSubT;
+                $borrarinf->cant_porjefe = $subtotpersonas;
+                $borrarinf->save();
+                $subtotpersonas = 0;
+            }
+        }
+
+        $borrarinf = Infpregunta::whereNotIn('id', [0])->latest('id')->first();
+        if (isset($borrarinf)) {
+            $borrarinf->estotal = 99;
+            $borrarinf->totalgral1 = $subtottot;
+            $borrarinf->cambio_jefe = 78;
+            $borrarinf->saldo_per = $totalpersonas;
+            $borrarinf->fecha = date('d-m-Y');
+            $borrarinf->save();
+            $totalpersonas = 0;
+        }
+
+        $borrarinf = Infpregunta::all();
+        $pdf = app('dompdf.wrapper');
+        $pdf->loadView('/layouts/admin/infPreguntaPdf', [
+            'elperiodo' => $elperiodo,
+            'cargoSelect' => $cargoSelect,
+            'borrarinf' => $borrarinf,
+        ])->setPaper('a4', 'landscape');
+        return $pdf->download('eval-x-pregunta.pdf');
+    }
+
     public function informePregunta()
     {
         if (auth()->user()->admin === "on") {
-            $titulos = Titulo::all();
+            $cargos = Cargo::all();
             $periodos = Periodo::whereIn('pordefecto', ['on'])->first();
             if (!isset($periodos)) {
                 $periodos = Periodo::all();
             }
             return view('/layouts/admin/informePreguntas', [
-                'titulos' => $titulos,
+                'cargos' => $cargos,
                 'periodos' => $periodos,
             ]);
         } else {
             return view('errors/noHabilitado');
         }
+    }
+
+    public function informeComentario()
+    {
+        if (auth()->user()->admin === "on") {
+            $cargos = Cargo::all();
+            $periodos = Periodo::whereIn('pordefecto', ['on'])->first();
+            if (!isset($periodos)) {
+                $periodos = Periodo::all();
+            }
+            return view('/layouts/admin/informeComentarios', [
+                'cargos' => $cargos,
+                'periodos' => $periodos,
+            ]);
+        } else {
+            return view('errors/noHabilitado');
+        }
+    }
+
+    public function informeComentarioCreate(Request $request)
+    {
+        $borrarinf = Infjefatura::whereNotNull('id')->delete();
+        $elperiodo = Periodo::whereIn('pordefecto', ['on'])->first();
+        $totalcoment = 0;
+        if ($request->cargo_descrip === "Todos") {
+            $cargoSelect = Cargo::all();
+            //            $laspersonas = Persona::orderBy('cargo_id', 'ASC')->get();
+            $laevaluacion = Evalua::whereNotNull('observacion');
+            $laevaluacion = $laevaluacion->whereIn('periodo', [$elperiodo->descrip]);
+            $laevaluacion = $laevaluacion->orderBy('cargo_id', 'DESC')->get();
+        } else {
+            $cargoSelect = Cargo::whereIn('descrip', [$request->cargo_descrip])->first();
+            $laevaluacion = Evalua::whereIn('cargo_id', [$cargoSelect->id]);
+            $laevaluacion = $laevaluacion->whereIn('periodo', [$elperiodo->descrip]);
+            $laevaluacion = $laevaluacion->whereNotNull('observacion')->orderBy('cargo_id', 'DESC')->get();
+        }
+        foreach ($laevaluacion as $laeval) {
+            $lapregunta = Pregunta::find($laeval->pregunta_id);
+            $borrarinf = new Infjefatura();
+            $personas = Persona::find($laeval->persona_id);
+            $borrarinf->persona_nom = $personas->persona_nom1 . " " . $personas->persona_ape1;
+            $borrarinf->periodo = $elperiodo->descrip;
+            $borrarinf->nro = $lapregunta->pregunta_nro;
+            $borrarinf->observa = $laeval->observacion;
+            $borrarinf->save();
+            $totalcoment = $totalcoment + 1;
+        }
+        $borrarinf = Infjefatura::whereNotIn('id', [0])->latest('id')->first();
+        if (isset($borrarinf)) {
+            $borrarinf->fecha = date('d-m-Y');
+            $borrarinf->saldo_per = $totalcoment;
+            $borrarinf->save();
+        }
+        $borrarinf = Infjefatura::all();
+        $pdf = app('dompdf.wrapper');
+        $pdf->loadView('/layouts/admin/infComentarioPdf', [
+            'elperiodo' => $elperiodo,
+            'cargoSelect' => $cargoSelect,
+            'borrarinf' => $borrarinf,
+        ])->setPaper('a4', 'landscape');
+        return $pdf->download('eval-comentarios.pdf');
     }
 
     public function showCargoCreate()

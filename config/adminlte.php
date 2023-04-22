@@ -340,6 +340,12 @@ return [
                     'icon' => 'fas fa-solid fa-users',
                     'url'  => 'admin/informes/preguntas',
                 ],
+                [
+                    'text' => 'Comentarios por persona',
+                    'icon' => 'fas fa-solid fa-users',
+                    'url'  => 'admin/informes/comentarios',
+                ],
+
 
             ],
         ],

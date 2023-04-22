@@ -12,7 +12,7 @@
           <!-- general form elements -->
           <div class="card card-primary">
             <div class="card-header">
-              <h3 class="card-title">Informes de Promedios por Preguntas</h3>
+              <h3 class="card-title">Informes de Comentarios por personas</h3>
             </div>
             <br>
             <div class="card-header">
@@ -20,7 +20,7 @@
             </div>
             <!-- /.card-header -->
             <!-- form start -->
-           <form action="{{ url('/admin/informes/preguntasInf') }}" method="get">
+           <form action="{{ url('/admin/informes/comentariosInf') }}" method="get">
                @csrf
                <div style="padding-left: 10px" class="form-group">
                    <label  for="select-cargo">Cargo</label>

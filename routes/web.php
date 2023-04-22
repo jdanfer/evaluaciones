@@ -118,6 +118,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('admin/informes/preguntas', ['as' => 'admin/informes/preguntas', 'uses' => 'App\Http\Controllers\AdminController@informePregunta']);
     Route::get('admin/informes/preguntasInf', ['as' => 'admin/informes/preguntasInf', 'uses' => 'App\Http\Controllers\AdminController@informePreguntaCreate']);
 
+    //Informes con comentarios
+    Route::get('admin/informes/comentarios', ['as' => 'admin/informes/comentarios', 'uses' => 'App\Http\Controllers\AdminController@informeComentario']);
+    Route::get('admin/informes/comentariosInf', ['as' => 'admin/informes/comentariosInf', 'uses' => 'App\Http\Controllers\AdminController@informeComentarioCreate']);
+
     //    Route::get('tablasdelsistema', ['as' => 'tablasdelsistema', 'uses' => 'App\Http\Controllers\AdminController@showTabla']);
     //    Route::get('permisos/crear', ['as' => 'permisos.crear', 'uses' => 'App\Http\Controllers\AdminController@showPermisoCreate']);
     //    Route::post('permisos', ['as' => 'permisos', 'uses' => 'App\Http\Controllers\AdminController@createPermiso']);
