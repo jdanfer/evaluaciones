@@ -1,5 +1,4 @@
 @extends('adminlte::page')
-
 @section('content')
 
 <div style="padding-left: 10px" class="header bg-gradient-default pb-8 pt-5 pt-md-8">
@@ -37,7 +36,7 @@
                 </div>
 
                 <div style="padding-left: 10px">
-                   <button type="submit" class="btn btn-primary">Procesar...</button>
+                  <button type="submit" class="btn btn-primary">Procesar...</button>
                 </div>
                 <br>
            </form>
@@ -45,4 +44,5 @@
         </div><!-- /.container -->
       </div>
 </div>
+
 @endsection
