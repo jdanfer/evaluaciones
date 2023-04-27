@@ -48,9 +48,17 @@
               <td>{{$borrareva->observa}}</td>
             </tr>
             @if ($borrareva->saldo_per!=null)
-              <br>
+              <tr>
+                <td> </td>
+                <td style="text-align: center"> </td>
+                <td> </td>
+              </tr>
+
               <tr>
                 <td class="bg-success" style="color: white; text-align: center">Total Personas: {{$borrareva->saldo_per}}</td>
+                <td style="text-align: center"> </td>
+                <td> </td>
+  
               </tr>
             @endif
           @endforeach  
