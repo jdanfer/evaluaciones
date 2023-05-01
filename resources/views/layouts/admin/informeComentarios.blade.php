@@ -23,8 +23,8 @@
             </div>
             <!-- /.card-header -->
             <!-- form start -->
-            <form action="{{ url('/admin/informes/comentariosInf') }}" method="get">
-               @csrf
+            <form wire:submit.prevent="submit" action="{{ url('/admin/informes/comentariosInf') }}" method="get">
+              @csrf
                <div style="padding-left: 10px" class="form-group">
                    <label  for="select-cargo">Cargo</label>
                    <select id="select-cargo" class="form-control input-sm" name="cargo_descrip">
@@ -40,11 +40,16 @@
                 </div>
 
                 <div style="padding-left: 10px">
-                  <button type="submit" class="btn btn-primary">Procesar...</button>
-                </div>
-                <br>
+                  <button
+                  class="btn btn-primary"
+                  wire:loading.remove
+                  wire:target="submit">
+                  {{ __('Procesar') }}
+                 </button>
+            </div>
            </form>
           </div>
+
         </div><!-- /.container -->
       </div>
 </div>

@@ -14,7 +14,6 @@
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="../dist/css/adminlte.min.css">
-
      <h1 style="color:blue">Sistema de Evaluaciones: SAPP S.A.</h1>
 @stop
 
@@ -406,7 +405,6 @@
       })
     </script>
     
-
   </body>
     
 

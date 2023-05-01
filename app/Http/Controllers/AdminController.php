@@ -820,6 +820,7 @@ class AdminController extends Controller
         $borrarinf = Infjefatura::whereNotNull('id')->delete();
         $elperiodo = Periodo::whereIn('pordefecto', ['on'])->first();
         $totalcoment = 0;
+        $subtotalpor = 0;
         if ($request->cargo_descrip === "Todos") {
             $cargoSelect = Cargo::all();
             //            $laspersonas = Persona::orderBy('cargo_id', 'ASC')->get();
@@ -832,17 +833,45 @@ class AdminController extends Controller
             $laevaluacion = $laevaluacion->whereIn('periodo', [$elperiodo->descrip]);
             $laevaluacion = $laevaluacion->whereNotNull('observacion')->orderBy('cargo_id', 'DESC')->get();
         }
+        $primeravez = 0;
         foreach ($laevaluacion as $laeval) {
+            if ($primeravez === 1) {
+                $borrarinf = Infjefatura::whereNotIn('id', [0])->latest('id')->first();
+                if (isset($borrarinf)) {
+                    if ($borrarinf->cant_porjefe != $laeval->cargo_id) {
+                        $cargoEval = Cargo::find($borrarinf->cant_porjefe);
+                        if (isset($cargoEval)) {
+                            $borrarinf->descrip = $cargoEval->descrip;
+                            $borrarinf->prom1 = $subtotalpor;
+                            $borrarinf->save();
+                        }
+                        $subtotalpor = 0;
+                    }
+                }
+            }
             $lapregunta = Pregunta::find($laeval->pregunta_id);
             $borrarinf = new Infjefatura();
             $personas = Persona::find($laeval->persona_id);
             $borrarinf->persona_nom = $personas->persona_nom1 . " " . $personas->persona_ape1;
             $borrarinf->periodo = $elperiodo->descrip;
             $borrarinf->nro = $lapregunta->pregunta_nro;
+            $borrarinf->cant_porjefe = $laeval->cargo_id;
             $borrarinf->observa = $laeval->observacion;
             $borrarinf->save();
+            $primeravez = 1;
             $totalcoment = $totalcoment + 1;
+            $subtotalpor = $subtotalpor + 1;
         }
+        $borrarinf = Infjefatura::whereNotIn('id', [0])->latest('id')->first();
+        if (isset($borrarinf)) {
+            $cargoEval = Cargo::find($borrarinf->cant_porjefe);
+            if (isset($cargoEval)) {
+                $borrarinf->descrip = $cargoEval->descrip;
+                $borrarinf->prom1 = $subtotalpor;
+                $borrarinf->save();
+            }
+        }
+
         $borrarinf = Infjefatura::whereNotIn('id', [0])->latest('id')->first();
         if (isset($borrarinf)) {
             $borrarinf->fecha = date('d-m-Y');

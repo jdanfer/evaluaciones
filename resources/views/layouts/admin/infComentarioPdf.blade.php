@@ -47,6 +47,18 @@
               <td style="text-align: center">{{$borrareva->nro}}</td>
               <td>{{$borrareva->observa}}</td>
             </tr>
+            @if ($borrareva->descrip!=null)
+                <tr>
+                  <td> </td>
+                  <td style="text-align: center"> </td>
+                  <td> </td>
+                </tr>
+                <tr>
+                  <td class="bg-success" style="color: white; text-align: center">SubTotal x : {{$borrareva->descrip}} : {{$borrareva->prom1}}</td>
+                  <td style="text-align: center"> </td>
+                  <td> </td>
+                </tr>
+            @endif
             @if ($borrareva->saldo_per!=null)
               <tr>
                 <td> </td>
