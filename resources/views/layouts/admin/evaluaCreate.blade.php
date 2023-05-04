@@ -1,4 +1,7 @@
 @extends('adminlte::page')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" />
 
 @section('content_header')
      <h1 style="color:blue">Personas para evaluar por Jefatura: {{ $lapersona->cargo->descrip}}</h1>
@@ -8,6 +11,7 @@
 
     @include('layouts.admin.message')
     @include('layouts.admin.errors')
+
     <div class="row" style="padding: 10px">
       <div class="col-lg-12 col-md-8">
         <div class="card">
@@ -44,7 +48,7 @@
                             @endif
                           </td>
                           <td style="width: 100px;">
-                            <a href="{{ url('admin/evaluacion/' . $persona->id . '/pdf') }}" class="btn btn-sm btn-success">PDF</a>
+                            <a href="{{ url('admin/evaluacion/' . $persona->id . '/pdf') }}" id="proceso" class="btn btn-sm btn-success">PDF</a>
                           </td>
                         </tr>
                   @endforeach
@@ -65,6 +69,5 @@
       <div class="col-lg-10 col-md-8">
 
       </div>
-    </div>
-
+    </div>      
     @endsection
