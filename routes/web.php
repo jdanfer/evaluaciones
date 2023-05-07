@@ -26,7 +26,6 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 //Route::get('/crearexcel', 'App\Http\Controllers\AdminController@crearExcel');
 //Route::get('procesos/arqueo/cobrados', 'App\Http\Controllers\AdminController@showCobrados');
 
-
 Route::group(['middleware' => 'auth'], function () {
     //    Route::resource('user', 'App\Http\Controllers\UserController', ['except' => ['show']]);
     Route::get('profile', ['as' => 'profile.edit', 'uses' => 'App\Http\Controllers\ProfileController@edit']);

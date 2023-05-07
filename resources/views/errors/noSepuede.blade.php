@@ -6,7 +6,7 @@
             @include('layouts.admin.errors')
             <div class="row" style="padding: 10px">
                 <div class="col-lg-6 col-md-8">
-                    <h1 style="color: blue">Página no encontrada</h1>
+                    <h1 style="color: red">No se encuentra el documento registrado. Verifique!!</h1>
                 </div>
             </div>
 
