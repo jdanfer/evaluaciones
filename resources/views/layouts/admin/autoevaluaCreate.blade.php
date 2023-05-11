@@ -5,6 +5,7 @@
 
     <div class="header bg-gradient-default pb-8 pt-5 pt-md-8">
         @include('admin.message')
+        @include('admin.mensajealerta')
         @include('admin.errors')
         <div class="container-fluid">
             <div class="row">
@@ -161,14 +162,20 @@
             </div>
             <div class="col-lg-3 col-md-8">
                 <div class="card">
-                    <a class="btn btn-warning btn-lg active"
-                        href="{{ url('admin/autoevaluacion/' . auth()->user()->documento . '/cerrar') }}"
-                        onclick="return confirm('¿Seguro que deseas cerrar tu Autoevaluación?')">
-                        <span aria-hidden="true" class="glyphicon glyphicon-trash">
-                        </span>
-                        Terminar Autoevaluación</a>
+                    @if (auth()->user()->auto_fin === 1)
+                        <a class="btn btn-danger btn-lg active" href="#">
+                            <span aria-hidden="true" class="glyphicon glyphicon-trash">
+                            </span>
+                            Autoevaluación Cerrada</a>
+                    @else
+                        <a class="btn btn-warning btn-lg active"
+                            href="{{ url('admin/autoevaluacion/' . auth()->user()->documento . '/cerrar') }}"
+                            onclick="return confirm('¿Seguro que deseas cerrar tu Autoevaluación?')">
+                            <span aria-hidden="true" class="glyphicon glyphicon-trash">
+                            </span>
+                            Terminar Autoevaluación</a>
+                    @endif
                 </div>
-
             </div>
         </div>
     </div>

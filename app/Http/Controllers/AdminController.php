@@ -25,13 +25,12 @@ class AdminController extends Controller
     {
         //        $pdf = PDF::loadView('libro.pdf');
         //        $pdf->loadHTML('<h1>Test</h1>');
-        //        return $pdf->stream();
         $elperiodo = Periodo::whereIn('pordefecto', ['on'])->first();
         $lapersona = Persona::find($documento);
 
         $autoevaluas = Evalua::where('persona_id', $lapersona->id);
-        $autoevaluas = $autoevaluas->whereNotIn('jefatura_eval', [1])->get();
-
+        $autoevaluas = $autoevaluas->whereNotIn('jefatura_eval', [1]);
+        $autoevaluas = $autoevaluas->orderBy('nro_pregunta', 'DESC')->get();
         $borrarinf = Infevalula::where('jefatura', $lapersona->jefatura->descrip)->delete();
         foreach ($autoevaluas as $autoev) {
             $lapregunta = Pregunta::find($autoev->pregunta_id);
@@ -48,7 +47,8 @@ class AdminController extends Controller
             $borrarinf->save();
         }
 
-        $borrarinf = Infevalula::where('jefatura', $lapersona->jefatura->descrip)->get();
+        $borrarinf = Infevalula::where('jefatura', $lapersona->jefatura->descrip);
+        $borrarinf = $borrarinf->orderBy('nro', 'DESC')->get();
         if (isset($borrarinf)) {
             $total = $borrarinf->count();
         } else {
@@ -60,6 +60,8 @@ class AdminController extends Controller
         $cuentaPreg = 0;
         $totpromediotit = 0;
         $idanterior = 0;
+        $cambiodetitulo = 0;
+        $tituloanterior = "Sin datos";
         foreach ($borrarinf as $evaljefe) {
             $infevaluas = Infevalula::find($evaljefe->id);
             $autoevaluas = Evalua::where('persona_id', $lapersona->id);
@@ -68,7 +70,13 @@ class AdminController extends Controller
             if (isset($autoevaluas)) {
                 if ($idanterior === 0) {
                 } else {
-                    if ($evaljefe->nro === 1) {
+                    $idanterior = $evaljefe->id - 1;
+                    $infmodif = Infevalula::find($idanterior);
+                    $tituloanterior = $infmodif->titulo;
+                    if ($evaljefe->titulo != $tituloanterior) {
+                        $cambiodetitulo = 1;
+                    }
+                    if ($cambiodetitulo === 1) {
                         $totpromediotit = 0;
                         $idanterior = $evaljefe->id - 1;
                         $infmodif = Infevalula::find($idanterior);
@@ -84,6 +92,7 @@ class AdminController extends Controller
                         $cuentaPreg = 0;
                         $totpromediotit = 0;
                         $promediotit = 0;
+                        $cambiodetitulo = 0;
                     }
                 }
                 $cuentaPreg = $cuentaPreg + 1;
@@ -99,7 +108,15 @@ class AdminController extends Controller
                 $totalprod = $totalprod + $promedio;
                 $idanterior = 1;
             } else {
-                if ($evaljefe->nro === 1 && $idanterior > 0) {
+                if ($idanterior != 0) {
+                    $idanterior = $evaljefe->id - 1;
+                    $infmodif = Infevalula::find($idanterior);
+                    $tituloanterior = $infmodif->titulo;
+                    if ($evaljefe->titulo != $tituloanterior) {
+                        $cambiodetitulo = 1;
+                    }
+                }
+                if ($cambiodetitulo === 1 && $idanterior > 0) {
                     $totpromediotit = 0;
                     $idanterior = $evaljefe->id - 1;
                     $infmodif = Infevalula::find($idanterior);
@@ -114,6 +131,7 @@ class AdminController extends Controller
                     $infmodif->save();
                     $totpromediotit = 0;
                     $cuentaPreg = 0;
+                    $cambiodetitulo = 0;
                 }
             }
         }
@@ -901,7 +919,7 @@ class AdminController extends Controller
     public function showPeriodoCreate()
     {
         $periodos = Periodo::all();
-        return view('/layouts/admin/PeriodoCreate', [
+        return view('/layouts/admin/periodoCreate', [
             'periodos' => $periodos,
         ]);
     }
@@ -909,7 +927,7 @@ class AdminController extends Controller
     public function showJefaturaCreate()
     {
         $jefaturas = Jefatura::all();
-        return view('/layouts/admin/JefaturaCreate', [
+        return view('/layouts/admin/jefaturaCreate', [
             'jefaturas' => $jefaturas,
         ]);
     }
@@ -917,7 +935,7 @@ class AdminController extends Controller
     public function showTituloCreate()
     {
         $titulos = Titulo::all();
-        return view('/layouts/admin/TituloCreate', [
+        return view('/layouts/admin/tituloCreate', [
             'titulos' => $titulos,
         ]);
     }
@@ -1077,7 +1095,6 @@ class AdminController extends Controller
             'persona_nom1' => 'required',
             'persona_ape1' => 'required',
             'persona_ingreso' => 'required',
-            'persona_nac' => 'required',
             'cargo_id' => 'required',
             'jefatura_id' => 'required',
         ];
@@ -1086,7 +1103,6 @@ class AdminController extends Controller
             'pregunta_nom1.required' => 'El campo primer nombre es requerido.',
             'pregunta_ape1.required' => 'El campo primer apellido es requerido.',
             'pregunta_ingreso.required' => 'El campo fecha ingreso es requerido.',
-            'pregunta_nac.required' => 'El campo fecha nacimiento es requerido.',
             'cargo_id.required' => 'El campo título es requerido.',
             'jefatura_id.required' => 'El campo Jefatura es requerido',
         ];
@@ -1304,6 +1320,7 @@ class AdminController extends Controller
     public function showAutoEval(Request $request)
     {
         $seleccperiodo = 0;
+        $lapersonainiciada = Persona::where('persona_doc', Auth::user()->documento)->first();
 
         if (isset($request->periodo_id)) {
             $periodosSelec = Periodo::where('id', $request->periodo_id)->first();
@@ -1347,6 +1364,7 @@ class AdminController extends Controller
                         $autoevalnew->titulo_id = $request->titulo_id;
                         $autoevalnew->puntos = 0;
                         $autoevalnew->pregunta_id = $pregunta->id;
+                        $autoevalnew->nro_pregunta = $pregunta->pregunta_nro;
                         $autoevalnew->periodo = $periodosSelec->descrip;
                         $autoevalnew->confirmado = 0;
                         $autoevalnew->jefatura_eval = 0;
@@ -1363,6 +1381,7 @@ class AdminController extends Controller
                 'titulos' => $titulos,
                 'jefaturas' => $jefaturas,
                 'periodos' => $periodos,
+                'lapersonainiciada' > $lapersonainiciada,
             ]);
         }
     }
@@ -1434,6 +1453,7 @@ class AdminController extends Controller
                         $autoevalnew->titulo_id = $request->titulo_id;
                         $autoevalnew->puntos = 0;
                         $autoevalnew->pregunta_id = $pregunta->id;
+                        $autoevalnew->nro_pregunta = $pregunta->pregunta_nro;
                         $autoevalnew->periodo = $periodosSelec->descrip;
                         $autoevalnew->confirmado = 0;
                         $autoevalnew->jefatura_eval = 1;
@@ -1650,7 +1670,6 @@ class AdminController extends Controller
             'persona_nom1' => 'required',
             'persona_ape1' => 'required',
             'persona_ingreso' => 'required',
-            'persona_nac' => 'required',
             'cargo_id' => 'required',
             'jefatura_id' => 'required',
         ];
@@ -1659,7 +1678,6 @@ class AdminController extends Controller
             'persona_nom1.required' => 'El campo primer nombre es requerido.',
             'persona_ape1.required' => 'El campo primer apellido es requerido.',
             'persona_ingreso.required' => 'El campo fecha ingreso es requerido.',
-            'persona_nac.required' => 'El campo fecha nacimiento es requerido.',
             'cargo_id.required' => 'El campo título es requerido.',
             'jefatura_id.required' => 'El campo Jefatura es requerido',
         ];
@@ -1807,46 +1825,83 @@ class AdminController extends Controller
 
     public function showAutoevalCierre($documento)
     {
+        ///acá 11/05 guardar también en table users el cierre
         $persona = Persona::where('persona_doc', $documento)->first();
+        $puedecerrar = 0;
         if (isset($persona)) {
             $autoevalua = Evalua::where('persona_id', $persona->id)
                 ->whereIn('jefatura_eval', [0])->get();
             if ($autoevalua->isEmpty()) {
+                return redirect()->back()->with('mensajealerta', "ATENCION! No se pudo actualizar el registro.");
             } else {
-                foreach ($autoevalua as $autoeval) {
-                    $modificar = Evalua::find($autoeval->id);
-                    $modificar->cerrada = 1;
-                    $modificar->save();
+                $cantidadevaluas = Evalua::where('persona_id', $persona->id)
+                    ->whereIn('jefatura_eval', [0])->get();
+                $cantidad = $cantidadevaluas->count();
+                if ($cantidad > 15) {
+                    foreach ($cantidadevaluas as $cantidadev) {
+                        if ($cantidadev->puntos === 0) {
+                            $puedecerrar = 1;
+                        }
+                    }
+                } else {
+                    return redirect()->back()->with('mensajealerta', "ATENCION! No se puede cerrar la evaluación. Verifique!!");
                 }
-                $persona->autoeval_fin = 1;
-                $persona->save();
+                if ($puedecerrar === 0) {
+                    foreach ($autoevalua as $autoeval) {
+                        $modificar = Evalua::find($autoeval->id);
+                        $modificar->cerrada = 1;
+                        $modificar->save();
+                    }
+                    $persona->autoeval_fin = 1;
+                    $persona->save();
+                    return redirect()->back()->with('mensaje', "AUTOEVALUACION cerrada correctamente.");
+                } else {
+                    return redirect()->back()->with('mensajealerta', "ATENCION! No se pudo actualizar el registro.");
+                }
             }
-            return redirect()->back()->with('mensaje', "Evaluación cerrada correctamente.");
         } else {
-            return redirect()->back()->with('mensaje', "ATENCION! No se pudo actualizar el registro.");
+            return redirect()->back()->with('mensajealerta', "ATENCION! No se pudo actualizar el registro.");
         }
     }
 
     public function showEvalCierre(Request $request, $id)
     {
         $persona = Persona::find($id);
+        $puedecerrar = 0;
         if (isset($persona)) {
             $autoevalua = Evalua::where('persona_id', $persona->id)
                 ->whereIn('jefatura_eval', [1])->get();
             if ($autoevalua->isEmpty()) {
+                return redirect()->back()->with('mensajealerta', "ATENCION! No se pudo actualizar el registro.");
             } else {
-                foreach ($autoevalua as $autoeval) {
-                    $modificar = Evalua::find($autoeval->id);
-                    $modificar->cerrada_jefe = 1;
-                    $modificar->save();
+                $cantidadevaluas = Evalua::where('persona_id', $persona->id)
+                    ->whereIn('jefatura_eval', [1])->get();
+                $cantidad = $cantidadevaluas->count();
+                if ($cantidad > 15) {
+                    foreach ($cantidadevaluas as $cantidadev) {
+                        if ($cantidadev->puntos === 0) {
+                            $puedecerrar = 1;
+                        }
+                    }
+                } else {
+                    return redirect()->back()->with('mensajealerta', "ATENCION! No es posible cerrar evaluación, VERIFIQUE!!.");
                 }
-                $persona->autoeval_fin = 2;
-                $persona->save();
+                if ($puedecerrar === 0) {
+                    foreach ($autoevalua as $autoeval) {
+                        $modificar = Evalua::find($autoeval->id);
+                        $modificar->cerrada_jefe = 1;
+                        $modificar->save();
+                    }
+                    $persona->autoeval_fin = 2;
+                    $persona->save();
+                    return redirect()->back()->with('mensaje', "Evaluación cerrada correctamente.");
+                } else {
+                    return redirect()->back()->with('mensajealerta', "ATENCION! No se pudo actualizar el registro.");
+                }
             }
             ///            return view('/layouts/admin/evaluaCreate')->with('mensaje', "Evaluación cerrada correctamente");
-            return redirect()->back()->with('mensaje', "Evaluación cerrada correctamente.");
         } else {
-            return redirect()->back()->with('mensaje', "ATENCION! No se pudo actualizar el registro.");
+            return redirect()->back()->with('mensajealerta', "ATENCION! No se pudo actualizar el registro.");
         }
     }
 }

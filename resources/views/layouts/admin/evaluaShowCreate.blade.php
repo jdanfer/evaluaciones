@@ -160,12 +160,19 @@
             </div>
             <div class="col-lg-3 col-md-8">
                 <div class="card">
-                    <a class="btn btn-warning btn-lg active"
-                        href="{{ url('admin/evaluacion/' . $lapersona->id . '/cerrar') }}"
-                        onclick="return confirm('¿Seguro que deseas cerrar la EVALUACIÓN?')">
-                        <span aria-hidden="true" class="glyphicon glyphicon-trash">
-                        </span>
-                        Terminar Evaluación</a>
+                    @if (auth()->user()->eval_fin === 1)
+                        <a class="btn btn-danger btn-lg active" href="#">
+                            <span aria-hidden="true" class="glyphicon glyphicon-trash">
+                            </span>
+                            Evaluación Cerrada</a>
+                    @else
+                        <a class="btn btn-warning btn-lg active"
+                            href="{{ url('admin/evaluacion/' . $lapersona->id . '/cerrar') }}"
+                            onclick="return confirm('¿Seguro que deseas cerrar la EVALUACIÓN?')">
+                            <span aria-hidden="true" class="glyphicon glyphicon-trash">
+                            </span>
+                            Terminar Evaluación</a>
+                    @endif
                 </div>
 
             </div>
