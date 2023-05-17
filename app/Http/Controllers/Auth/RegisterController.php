@@ -52,7 +52,7 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
-            'documento' => ['required', 'min:7', 'max:8'],
+            'documento' => ['required', 'min:7', 'max:8', 'unique:users'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
@@ -66,18 +66,14 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        $documento = $data['documento'];
-        $personas = Persona::where('persona_doc', $documento)->first();
-        if (empty($personas)) {
-            return redirect()->back()->withErrors('No es posible registrar un usuario que no figura en Personas a evaluar');
-        } else {
-            return User::create([
-                'name' => $data['name'],
-                'grupo' => "Usuario",
-                'documento' => $data['documento'],
-                'email' => $data['email'],
-                'password' => Hash::make($data['password']),
-            ]);
-        }
+        //        $documento = $data['documento'];
+        //        $personas = Persona::where('persona_doc', $documento)->first();
+        return User::create([
+            'name' => $data['name'],
+            'grupo' => "Usuario",
+            'documento' => $data['documento'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+        ]);
     }
 }

@@ -1275,7 +1275,8 @@ class AdminController extends Controller
     {
         //        $personas = Persona::paginate(5);
         $lapersona = Persona::where('persona_doc', Auth::user()->documento)->first();
-        if (empty($lapersona)) {
+        if (!isset($lapersona)) {
+            return view('/errors/noEsUsuario');
         } else {
             $jefatura = Cargo::where('id', $lapersona->cargo_id)->first();
             $noesjefe = Jefatura::where('descrip', $lapersona->cargo->descrip)->first();
@@ -1288,32 +1289,32 @@ class AdminController extends Controller
                     $personasView = Persona::where('jefatura_id', $evaluador->id)->orderBy('persona_ape1')->simplePaginate(5);
                 }
             }
-        }
-        if (!empty($personasView)) {
-            foreach ($personasView as $personaView) {
-                $cuenta = Evalua::where('persona_id', $personaView->id)
-                    ->whereIn('jefatura_eval', [0])
-                    ->where('puntos', '>', 0)
-                    ->whereIn('confirmado', [0, 1, 2])->count();
-                if (!empty($cuenta)) {
-                    $personaEdita = Persona::find($personaView->id);
-                    $personaEdita->evalua = $cuenta;
-                    $personaEdita->save();
-                } else {
-                    $personaEdita = Persona::find($personaView->id);
-                    $personaEdita->evalua = 0;
-                    $personaEdita->save();
+            if (!empty($personasView)) {
+                foreach ($personasView as $personaView) {
+                    $cuenta = Evalua::where('persona_id', $personaView->id)
+                        ->whereIn('jefatura_eval', [0])
+                        ->where('puntos', '>', 0)
+                        ->whereIn('confirmado', [0, 1, 2])->count();
+                    if (!empty($cuenta)) {
+                        $personaEdita = Persona::find($personaView->id);
+                        $personaEdita->evalua = $cuenta;
+                        $personaEdita->save();
+                    } else {
+                        $personaEdita = Persona::find($personaView->id);
+                        $personaEdita->evalua = 0;
+                        $personaEdita->save();
+                    }
                 }
             }
-        }
-        $personas = $personasView;
-        if (!empty($noesjefe)) {
-            return view('/layouts/admin/evaluaCreate', [
-                'personas' => $personas,
-                'lapersona' => $lapersona,
-            ]);
-        } else {
-            return view('/errors/noHabilitado');
+            $personas = $personasView;
+            if (!empty($noesjefe)) {
+                return view('/layouts/admin/evaluaCreate', [
+                    'personas' => $personas,
+                    'lapersona' => $lapersona,
+                ]);
+            } else {
+                return view('/errors/noHabilitado');
+            }
         }
     }
 
@@ -1321,68 +1322,71 @@ class AdminController extends Controller
     {
         $seleccperiodo = 0;
         $lapersonainiciada = Persona::where('persona_doc', Auth::user()->documento)->first();
-
-        if (isset($request->periodo_id)) {
-            $periodosSelec = Periodo::where('id', $request->periodo_id)->first();
-            $periodos = Periodo::all();
-            $seleccperiodo = 1;
-        } else {
-            $periodos = Periodo::all();
-            $periodosSelec = Periodo::orderby('id', 'DESC')->get();
-        }
-        //Ayudante informática y Jefe Adm
-        if (Auth::user()->grupo === "Usuario") {
-            $lapersona = Persona::where('persona_doc', Auth::user()->documento)->first();
-
-            if (isset($request->titulo_id)) {
-                $autoevalView = Evalua::where('titulo_id', $request->titulo_id);
-                if (isset($request->periodo_id)) {
-                    $autoevalView = $autoevalView->where('periodo', $periodosSelec->descrip);
-                } else {
-                    $autoevalView = $autoevalView->where('periodo', 'Sin Datos');
-                }
-                $autoevalView = $autoevalView->where('persona_id', $lapersona->id)->simplePaginate(8);
+        if (isset($lapersonainiciada)) {
+            if (isset($request->periodo_id)) {
+                $periodosSelec = Periodo::where('id', $request->periodo_id)->first();
+                $periodos = Periodo::all();
+                $seleccperiodo = 1;
             } else {
-                // Tiene que seleccionar tìtulo????
-                $autoevalView = Evalua::where('titulo_id', 0);
-                $autoevalView = $autoevalView->where('persona_id', $lapersona->id)->simplePaginate(8);
+                $periodos = Periodo::all();
+                $periodosSelec = Periodo::orderby('id', 'DESC')->get();
             }
-            ///            $informaticas = Informatica::where('user_id', auth()->id())->paginate(5);
+            //Ayudante informática y Jefe Adm
+            if (Auth::user()->grupo === "Usuario") {
+                $lapersona = Persona::where('persona_doc', Auth::user()->documento)->first();
 
-            $titulos = Titulo::all();
-            $jefaturas = Jefatura::all();
-            if ($autoevalView->isEmpty()) {
-                if ($seleccperiodo === 1) {
-                    $preguntas = Pregunta::where('cargo_id', $lapersona->cargo_id);
-                    $preguntas = $preguntas->where('titulo_id', $request->titulo_id)->get();
-                    foreach ($preguntas as $pregunta) {
-                        $autoevalnew = new Evalua();
-                        $autoevalnew->fecha = date('Y-m-d');
-                        $autoevalnew->persona_id = $lapersona->id;
-                        $autoevalnew->jefatura_id = $lapersona->jefatura_id;
-                        $autoevalnew->cargo_id = $lapersona->cargo_id;
-                        $autoevalnew->titulo_id = $request->titulo_id;
-                        $autoevalnew->puntos = 0;
-                        $autoevalnew->pregunta_id = $pregunta->id;
-                        $autoevalnew->nro_pregunta = $pregunta->pregunta_nro;
-                        $autoevalnew->periodo = $periodosSelec->descrip;
-                        $autoevalnew->confirmado = 0;
-                        $autoevalnew->jefatura_eval = 0;
-                        $autoevalnew->save();
-                    }
+                if (isset($request->titulo_id)) {
                     $autoevalView = Evalua::where('titulo_id', $request->titulo_id);
-                    $autoevalView = $autoevalView->where('periodo', $periodosSelec->descrip);
+                    if (isset($request->periodo_id)) {
+                        $autoevalView = $autoevalView->where('periodo', $periodosSelec->descrip);
+                    } else {
+                        $autoevalView = $autoevalView->where('periodo', 'Sin Datos');
+                    }
+                    $autoevalView = $autoevalView->where('persona_id', $lapersona->id)->simplePaginate(8);
+                } else {
+                    // Tiene que seleccionar tìtulo????
+                    $autoevalView = Evalua::where('titulo_id', 0);
                     $autoevalView = $autoevalView->where('persona_id', $lapersona->id)->simplePaginate(8);
                 }
+                ///            $informaticas = Informatica::where('user_id', auth()->id())->paginate(5);
+
+                $titulos = Titulo::all();
+                $jefaturas = Jefatura::all();
+                if ($autoevalView->isEmpty()) {
+                    if ($seleccperiodo === 1) {
+                        $preguntas = Pregunta::where('cargo_id', $lapersona->cargo_id);
+                        $preguntas = $preguntas->where('titulo_id', $request->titulo_id)->get();
+                        foreach ($preguntas as $pregunta) {
+                            $autoevalnew = new Evalua();
+                            $autoevalnew->fecha = date('Y-m-d');
+                            $autoevalnew->persona_id = $lapersona->id;
+                            $autoevalnew->jefatura_id = $lapersona->jefatura_id;
+                            $autoevalnew->cargo_id = $lapersona->cargo_id;
+                            $autoevalnew->titulo_id = $request->titulo_id;
+                            $autoevalnew->puntos = 0;
+                            $autoevalnew->pregunta_id = $pregunta->id;
+                            $autoevalnew->nro_pregunta = $pregunta->pregunta_nro;
+                            $autoevalnew->periodo = $periodosSelec->descrip;
+                            $autoevalnew->confirmado = 0;
+                            $autoevalnew->jefatura_eval = 0;
+                            $autoevalnew->save();
+                        }
+                        $autoevalView = Evalua::where('titulo_id', $request->titulo_id);
+                        $autoevalView = $autoevalView->where('periodo', $periodosSelec->descrip);
+                        $autoevalView = $autoevalView->where('persona_id', $lapersona->id)->simplePaginate(8);
+                    }
+                }
+                $autoevaluas = $autoevalView;
+                return view('/layouts/admin/autoevaluaCreate', [
+                    'autoevaluas' => $autoevaluas,
+                    'titulos' => $titulos,
+                    'jefaturas' => $jefaturas,
+                    'periodos' => $periodos,
+                    'lapersonainiciada' > $lapersonainiciada,
+                ]);
             }
-            $autoevaluas = $autoevalView;
-            return view('/layouts/admin/autoevaluaCreate', [
-                'autoevaluas' => $autoevaluas,
-                'titulos' => $titulos,
-                'jefaturas' => $jefaturas,
-                'periodos' => $periodos,
-                'lapersonainiciada' > $lapersonainiciada,
-            ]);
+        } else {
+            return view('errors/noEsUsuario');
         }
     }
 

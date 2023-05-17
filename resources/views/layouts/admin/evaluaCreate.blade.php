@@ -42,7 +42,8 @@
                                     </td>
                                     <td style="width: 100px;">
                                         @if ($persona->autoeval_fin === 2)
-                                            <a href="#" class="btn btn-sm btn-danger">Terminada</a>
+                                            <a href="#" class="btn btn-sm btn-danger disabled"
+                                                aria-disabled="true">Terminada</a>
                                         @else
                                             <a href="{{ url('admin/evaluaciones/' . $persona->id . '/editar') }}"
                                                 class="btn btn-sm btn-primary">Evaluar</a>
@@ -53,7 +54,8 @@
                                             <a href="{{ url('admin/evaluacion/' . $persona->id . '/pdf') }}" id="proceso"
                                                 class="btn btn-sm btn-success">PDF</a>
                                         @else
-                                            <a href="#" id="proceso" class="btn btn-sm btn-danger">PDF</a>
+                                            <a href="#" id="proceso" class="btn btn-sm btn-danger disabled"
+                                                aria-disabled="true">PDF</a>
                                         @endif
                                     </td>
                                 </tr>

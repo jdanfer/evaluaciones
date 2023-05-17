@@ -83,10 +83,12 @@
                                                 <td>{{ $autoevalua->pregunta->pregunta_nro }}</td>
                                                 <td>{{ $autoevalua->pregunta->descrip }}</td>
                                                 <td>{{ $autoevalua->puntos }}</td>
-                                                <td style="width: 100px;">
-                                                    @if ($autoevalua->cerrada === 1)
+                                                @if ($autoevalua->cerrada === 1)
+                                                    <td style="width: 100px;">
                                                         <a href="#" class="btn btn-sm btn-danger">Cerrada</a>
-                                                    @else
+                                                    </td>
+                                                @else
+                                                    <td style="width: 100px;">
                                                         <a class="btn btn-sm btn-primary" role="button" data-toggle="modal"
                                                             data-target="#modal-edit-{{ $autoevalua->id }}">Editar</a>
                                                         <div class="modal fade" id="modal-edit-{{ $autoevalua->id }}"
@@ -136,8 +138,8 @@
                                                                 </form>
                                                             </div>
                                                         </div>
-                                                    @endif
-                                                </td>
+                                                    </td>
+                                                @endif
                                             </tr>
                                         @endforeach
                                     @endif
@@ -163,7 +165,7 @@
             <div class="col-lg-3 col-md-8">
                 <div class="card">
                     @if (auth()->user()->auto_fin === 1)
-                        <a class="btn btn-danger btn-lg active" href="#">
+                        <a class="btn btn-danger btn-lg active disabled" aria-disabled="true" href="#">
                             <span aria-hidden="true" class="glyphicon glyphicon-trash">
                             </span>
                             Autoevaluación Cerrada</a>
