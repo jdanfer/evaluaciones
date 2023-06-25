@@ -23,7 +23,7 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 //Route::get('/enviar_correo', 'App\Http\Controllers\AdminController@sendCorreo');
-//Route::get('/crearexcel', 'App\Http\Controllers\AdminController@crearExcel');
+Route::get('/crearexcel', 'App\Http\Controllers\AdminController@crearExcel');
 //Route::get('procesos/arqueo/cobrados', 'App\Http\Controllers\AdminController@showCobrados');
 
 Route::group(['middleware' => 'auth'], function () {
@@ -33,6 +33,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::put('profile/update', ['as' => 'profile.update', 'uses' => 'App\Http\Controllers\ProfileController@update']);
     Route::get('profile', ['as' => 'profile.password', 'uses' => 'App\Http\Controllers\ProfileController@edit']);
     Route::put('profile/password', ['as' => 'profile.password', 'uses' => 'App\Http\Controllers\ProfileController@password']);
+    //Cargos
     Route::get('admin/cargos/crear', ['as' => 'admin/cargos/crear', 'uses' => 'App\Http\Controllers\AdminController@showCargoCreate']);
     Route::get('admin/cargos', ['as' => 'admin/cargos', 'uses' => 'App\Http\Controllers\AdminController@showCargo']);
     Route::get('admin/cargos/{id}/editar', ['as' => 'admin/cargos/{id}/editar', 'uses' => 'App\Http\Controllers\AdminController@showCargoEdit']);
@@ -72,8 +73,8 @@ Route::group(['middleware' => 'auth'], function () {
     ///Personas
     Route::get('admin/personas/crear', ['as' => 'admin/personas/crear', 'uses' => 'App\Http\Controllers\AdminController@showPersonaCreate']);
     Route::get('admin/personas', ['as' => 'admin/personas', 'uses' => 'App\Http\Controllers\AdminController@showPersona']);
-    Route::get('admin/personas/{id}/editar', ['as' => 'admin/personas/{id}/editar', 'uses' => 'App\Http\Controllers\AdminController@showPersonaEdit']);
-    Route::post('admin/personas/{id}/editar', ['as' => 'admin/personas/{id}/editar', 'uses' => 'App\Http\Controllers\AdminController@editPersona']);
+    Route::get('admin/personas/editar', ['as' => 'admin/personas/editar', 'uses' => 'App\Http\Controllers\AdminController@showPersonaEdit']);
+    Route::post('admin/personas/editar', ['as' => 'admin/personas/editar', 'uses' => 'App\Http\Controllers\AdminController@editPersona']);
     Route::get('admin/personas/{id}/eliminar', ['as' => 'admin/personas/{id}/eliminar', 'uses' => 'App\Http\Controllers\AdminController@deletePersona']);
     Route::get('admin/personas/jefaturas', ['as' => 'admin/personas/jefaturas', 'uses' => 'App\Http\Controllers\AdminController@deletePersona']);
     Route::post('admin/personas', ['as' => 'admin/personas', 'uses' => 'App\Http\Controllers\AdminController@createPersona']);

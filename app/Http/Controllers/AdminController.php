@@ -16,10 +16,42 @@ use App\Models\Infpregunta;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\PDF;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xls;
+use Illuminate\Support\Facades\Crypt;
 
 class AdminController extends Controller
 {
     //
+    public function crearExcel()
+    {
+        $archivoexcel = new Spreadsheet();
+        $archivoexcel->getProperties()->setCreator("Archivo1")->setTitle("Prueba");
+        $archivoexcel->setActiveSheetIndex(0);
+        $hojaActiva = $archivoexcel->getActiveSheet();
+        $archivoexcel->getDefaultStyle()->getFont()->setName('Tahoma');
+        $archivoexcel->getDefaultStyle()->getFont()->setSize(10);
+        $hojaActiva->getColumnDimension('A')->setWidth(50);
+        $colum = 1;
+        $hojaActiva->setCellValue('A' . $colum, 'CARGO');
+        $colum = $colum + 1;
+        $hojaActiva->setCellValue('A' . $colum, 'Jefe Departamento TI');
+
+        $hojaActiva->setCellValue('B2', 232322);
+        $hojaActiva->setCellValue('C1', 'Markos FErnad')->setCellValue('D1', 'CDP');
+
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="Pruebas.xls"');
+        header('Cache-Control: max-age=0');
+
+        $writer = IOFactory::createWriter($archivoexcel, 'Xls');
+        $writer->save('php://output');
+
+        //        $writer = new Xls($archivoexcel);
+        //        $writer->save('Pruebas excel.xls');
+    }
+
 
     public function generarPDF(Request $request, $documento)
     {
@@ -1214,18 +1246,19 @@ class AdminController extends Controller
             if (isset($request->jefatura_id)) {
                 if (isset($request->persona_doc)) {
                     $personasView = Persona::where('jefatura_id', $request->jefatura_id);
-                    $personasView = $personasView->where('persona_doc', $request->persona_doc)->simplePaginate(5);
+                    $personasView = $personasView->where('persona_doc', $request->persona_doc)->paginate(5);
                 } else {
-                    $personasView = Persona::where('jefatura_id', $request->jefatura_id)->simplePaginate(5);
+                    $personasView = Persona::where('jefatura_id', $request->jefatura_id)->paginate(5);
                 }
             } else {
                 if (isset($request->persona_doc)) {
-                    $personasView = Persona::where('persona_doc', $request->persona_doc)->simplePaginate(5);
+                    $personasView = Persona::where('persona_doc', $request->persona_doc)->paginate(5);
                 } else {
 
-                    $personasView = Persona::simplePaginate(5);
+                    $personasView = Persona::paginate(5);
                 }
             }
+            ///PROBAR con paginate()
             $personas = $personasView;
             return view('/layouts/admin/personaView', [
                 'personas' => $personas,
@@ -1490,6 +1523,7 @@ class AdminController extends Controller
 
     public function showCargoEdit($id)
     {
+        $id =  Crypt::decrypt($id);
         $jefaturas = Jefatura::all();
         return view("/layouts/admin/cargoEditView", [
             "cargo" => Cargo::find($id),
@@ -1506,6 +1540,7 @@ class AdminController extends Controller
 
     public function showJefaturaEdit($id)
     {
+        $id =  Crypt::decrypt($id);
         return view("/layouts/admin/jefaturaEditView", [
             "jefatura" => Jefatura::find($id),
         ]);
@@ -1531,8 +1566,9 @@ class AdminController extends Controller
         ]);
     }
 
-    public function showPersonaEdit($id)
+    public function showPersonaEdit(Request $request)
     {
+        $id = $request->id;
         $jefaturas = Jefatura::all();
         $cargos = Cargo::all();
         return view("/layouts/admin/personaEditView", [
@@ -1667,8 +1703,9 @@ class AdminController extends Controller
         return redirect('/admin/preguntas')->with('mensaje', "La Pregunta se ha modificado");
     }
 
-    public function editPersona(Request $request, $id)
+    public function editPersona(Request $request)
     {
+        $idSelect =  Crypt::decrypt($request->id);
         $rules = [
             'persona_doc' => 'required',
             'persona_nom1' => 'required',
@@ -1687,7 +1724,8 @@ class AdminController extends Controller
         ];
 
         $request->validate($rules, $customMessages);
-        $persona = Persona::find($id);
+
+        $persona = Persona::find($idSelect);
         $persona->persona_doc = $request->persona_doc;
         $persona->persona_nom1 = $request->persona_nom1;
         $persona->persona_nom2 = $request->persona_nom2;

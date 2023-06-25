@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Propaganistas\LaravelFakeId\RoutesWithFakeIds;
 
 class Persona extends Model
 {
+    use RoutesWithFakeIds;
     use HasFactory;
     protected $fillable = ['persona_doc', 'persona_nom1', 'persona_ape1', 'persona_ingreso', 'persona_nac', 'persona_genero', 'cargo_id', 'jefatura_id'];
 

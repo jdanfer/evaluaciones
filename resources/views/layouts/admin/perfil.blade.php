@@ -30,7 +30,7 @@
                             @endif
                         </div>
                         <div class="input-group mb-3">
-                            <input type="text" style="width: 300px;" class="form-control" disabled id="documento"
+                            <input type="text" style="width: 300px;" class="form-control" readonly id="documento"
                                 name="documento" placeholder="Cédula indentidad..." required
                                 value="{{ old('documento', auth()->user()->documento) }}">
                             <div class="input-group-append">
