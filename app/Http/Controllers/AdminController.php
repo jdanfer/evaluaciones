@@ -20,6 +20,8 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Illuminate\Support\Facades\Crypt;
+use RealRashid\SweetAlert\Facades\Alert;
+
 
 class AdminController extends Controller
 {
@@ -1052,7 +1054,8 @@ class AdminController extends Controller
         $periodo->descrip = $request->descrip;
         $periodo->pordefecto = $request->pordefecto;
         $periodo->save();
-        return redirect('admin/periodos')->with('mensaje', 'Se ha creado correctamente: ' . $request->descrip);
+        Alert::success('Registro grabado.', 'Cargos');
+        return redirect('admin/periodos');
     }
 
     public function createJefatura(Request $request)

@@ -8,16 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class Cargo extends Model
 {
     use HasFactory;
-    protected $fillable = ['descrip'];
+    protected $fillable = ['descrip', 'jefatura_id'];
 
-    public static $rules = [
-        'descrip' => 'required|min:3',
-    ];
+    //    public static $rules = [
+    //        'descrip' => 'required|min:3',
+    //    ];
 
-    public static $customMessages = [
-        'descrip.required' => 'El campo descripcion es obligatorio.',
-        'descrip.min' => 'El campo descripción debe contener >3 caract'
-    ];
+    //    public static $customMessages = [
+    //        'descrip.required' => 'El campo descripcion es obligatorio.',
+    //        'descrip.min' => 'El campo descripción debe contener >3 caract'
+    //    ];
 
     public function jefatura()
     {

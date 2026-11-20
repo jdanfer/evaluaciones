@@ -27,7 +27,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $totalpersonas = Persona::all();
+//        $totalpersonas = Persona::all();
+        $totalpersonas = Persona::where('habilitado', 0)->get();
         $lapersona = Persona::where('persona_doc', Auth::user()->documento)->first();
         if (empty($lapersona)) {
             $personas = Persona::where('persona_doc', 0)->get();
